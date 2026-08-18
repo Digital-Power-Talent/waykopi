@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --color-bg-base: #100E0C;
+  --color-bg-surface: #1C1712;
+  --color-text-primary: #F5F1E8;
+  --color-text-muted: #A69C8D;
+  --color-accent-gold: #C8A050;
+  --color-accent-gold-bright: #E4C374;
+  --color-coffee-brown: #3D2B1F;
+  --color-success: #7A9B76;
+  --color-error: #B85C50;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-accent: 'Playfair Display', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+body {
+  background-color: #100E0C !important;
+  color: #F5F1E8 !important;
+  font-family: 'Inter', system-ui, sans-serif;
+}

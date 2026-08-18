@@ -1,0 +1,80 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+    ports:
+      - "8000:8000"
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    command: php artisan queue:work --tries=3 --backoff=10
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+      - cache
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    command: sh -c "while true; do php artisan schedule:run; sleep 60; done"
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+      - cache
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-waykopi}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cache:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  waha:
+    image: devlikeapro/waha:latest
+    restart: unless-stopped
+    environment:
+      WHATSAPP_HOOK_URL: http://app:8000/api/webhooks/waha
+      WAHA_ZIP_LOGS: "false"
+    ports:
+      - "3000:3000"
+    volumes:
+      - waha_sessions_dev:/app/.sessions
+
+volumes:
+  pgdata_dev:
+  waha_sessions_dev:

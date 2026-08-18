@@ -1,0 +1,107 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    restart: unless-stopped
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@waykopi.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_letsencrypt:/letsencrypt
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+    env_file: .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`waykopi.com`) || Host(`www.waykopi.com`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    command: php artisan queue:work --tries=3 --backoff=10
+    restart: unless-stopped
+    depends_on: [db, cache]
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    command: sh -c "while true; do php artisan schedule:run; sleep 60; done"
+    restart: unless-stopped
+    depends_on: [db, cache]
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+
+  cache:
+    image: redis:7-alpine
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  waha:
+    image: devlikeapro/waha:latest
+    restart: unless-stopped
+    volumes:
+      - waha_sessions:/app/.sessions
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+
+volumes:
+  pgdata:
+  waha_sessions:
+  traefik_letsencrypt:

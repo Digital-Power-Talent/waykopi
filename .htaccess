@@ -1,0 +1,13 @@
+# Hostinger Apache / LiteSpeed Root Rewrite to /public
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Prevent direct access to sensitive dot files & directories
+    RewriteRule ^\.(.*) - [F,L]
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/|$) - [F,L]
+    RewriteRule ^(composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml|\.env.*|artisan) - [F,L]
+
+    # Rewrite all public traffic to the public directory
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
