@@ -49,8 +49,13 @@ class BiteshipService
      */
     protected function httpClient()
     {
+        $token = trim($this->apiKey);
+        if (str_starts_with($token, 'Bearer ')) {
+            $token = trim(substr($token, 7));
+        }
+
         $client = Http::withHeaders([
-            'Authorization' => "Bearer {$this->apiKey}",
+            'Authorization' => $token,
             'Content-Type' => 'application/json',
         ]);
 

@@ -143,13 +143,16 @@ class OrderService
             return $order;
         });
 
-        // Trigger Biteship order creation for COD or auto-create setting
-        if (config('services.biteship.auto_create_order', true) && ($checkoutData['payment_method'] ?? 'bank_transfer') === 'cod') {
+        // Trigger Biteship order creation for all orders if auto_create_order is enabled
+        if (config('services.biteship.auto_create_order', true)) {
             try {
                 $biteshipService = $this->biteshipService ?? app(BiteshipService::class);
-                $biteshipService->createOrder($order);
+                $biteshipResult = $biteshipService->createOrder($order);
+                if (! ($biteshipResult['success'] ?? false)) {
+                    \Illuminate\Support\Facades\Log::warning("Biteship order creation notice for #{$order->order_number}: ".($biteshipResult['message'] ?? 'Unknown error'));
+                }
             } catch (\Throwable $e) {
-                // Keep order created even if Biteship request encounters an issue
+                \Illuminate\Support\Facades\Log::warning("Biteship order creation exception for #{$order->order_number}: {$e->getMessage()}");
             }
         }
 
