@@ -8,6 +8,11 @@
     <title>{{ $title ?? 'Way Kopi — Kopi Robusta Lampung Petik Merah Direct from Farmers' }}</title>
     <meta name="description" content="Way Kopi menjual kopi robusta yang dipanen langsung oleh petani di Tanggamus, Lampung, Indonesia. Nikmati cita rasa bold, autentik, direct-to-consumer.">
 
+    <!-- Favicon & Brand Icons -->
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('favicon.png') }}?v=2">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=2">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}?v=2">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
