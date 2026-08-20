@@ -60,11 +60,11 @@ APP_URL=https://waykopi.com
 
 # Database (MySQL Hostinger)
 DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
+DB_HOST=localhost
 DB_PORT=3306
 DB_DATABASE=uXXXXXXX_waykopi
 DB_USERNAME=uXXXXXXX_waykopi_user
-DB_PASSWORD=password_database_anda
+DB_PASSWORD="password_database_anda"
 
 # Cache & Session (Jika tidak ada Redis di paket hosting, gunakan database/file)
 CACHE_STORE=file
@@ -73,7 +73,7 @@ SESSION_DRIVER=file
 
 # Biteship
 BITESHIP_API_KEY=biteship_live_xxxx
-BITESHIP_ORIGIN_AREA_ID=IDNP6IDNC384IDND3355
+BITESHIP_ORIGIN_AREA_ID=IDNP9IDNC74IDND6752IDZ16320
 BITESHIP_ORIGIN_POSTAL_CODE=16320
 
 # Xendit Payment Gateway
@@ -176,3 +176,32 @@ Agar pembatalan otomatis pesanan yang kedaluwarsa (`CancelExpiredOrdersCommand`)
 - [ ] Admin panel `https://waykopi.com/admin` dapat diakses dengan akun admin.
 - [ ] Perubahan status pesanan di admin mencatat riwayat ke `OrderStatusHistory`.
 - [ ] Invoice cetak resi pengiriman dapat dibuka dan dicetak.
+
+---
+
+## 8. Solusi Error Umum Deployment
+
+### Error: `SQLSTATE[HY000] [1045] Access denied for user 'uXXXXXXXX_user'@'127.0.0.1'`
+Penyebab utama di Hostinger shared hosting:
+1. **Penggunaan IP `127.0.0.1` vs `localhost`**: Di Hostinger, user MySQL didaftarkan dengan host `localhost` (Unix socket). Ubah `DB_HOST=127.0.0.1` menjadi `DB_HOST=localhost` pada file `.env`.
+2. **Password Salah / Mengandung Karakter Khusus**: Jika password memiliki karakter khusus (seperti `#`, `$`, `!`), wajib dibungkus tanda petik dua di `.env`: `DB_PASSWORD="PasswordKopi123!"`.
+3. **Cache Konfigurasi Lama**: Jalankan `php artisan config:clear` terlebih dahulu sebelum mengulang `php artisan migrate --force`.
+
+### Error: `Call to undefined function Illuminate\Filesystem\exec()` (saat `php artisan storage:link`)
+Penyebab utama di Hostinger shared hosting:
+Fungsi `symlink` dan `exec` diblokir secara default oleh Hostinger pada file `php.ini` demi alasan keamanan.
+
+**Solusi 1: Aktifkan via hPanel Hostinger (Sangat Mudah)**
+1. Buka **hPanel Hostinger** &rarr; **Advanced** &rarr; **PHP Configuration**.
+2. Pilih tab **PHP Functions**.
+3. Pada daftar *Disable functions*, hapus `exec` dan `symlink`.
+4. Klik **Save**, lalu jalankan ulang `php artisan storage:link` di terminal SSH.
+
+**Solusi 2: Buat Symbolic Link Manual via Terminal SSH**
+Jika fungsi PHP tidak ingin diaktifkan, jalankan perintah Linux native di terminal SSH:
+```bash
+ln -s /home/uXXXXXXX/domains/waykopi.com/storage/app/public /home/uXXXXXXX/domains/waykopi.com/public_html/storage
+```
+*(Ganti `/home/uXXXXXXX/domains/waykopi.com` dengan path absolut akun hosting Anda)*
+
+

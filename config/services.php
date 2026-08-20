@@ -37,10 +37,16 @@ return [
 
     'biteship' => [
         'api_key' => env('BITESHIP_API_KEY', ''),
-        'origin_area_id' => env('BITESHIP_ORIGIN_AREA_ID', 'IDNP6IDNC384IDND3355'),
+        'origin_contact_name' => env('BITESHIP_ORIGIN_CONTACT_NAME', 'Bagus'),
+        'origin_contact_phone' => env('BITESHIP_ORIGIN_CONTACT_PHONE', '6285280028167'),
+        'origin_address' => env('BITESHIP_ORIGIN_ADDRESS', 'jl. Kalisuren, kantor WayKopi Greenwood, Tajurhalang, Bogor, Jawa Barat, 16320, Indonesia'),
+        'origin_note' => env('BITESHIP_ORIGIN_NOTE', 'Dekat gerbang utama Way Kopi Roastery'),
+        'origin_area_id' => env('BITESHIP_ORIGIN_AREA_ID', 'IDNP9IDNC74IDND6752IDZ16320'),
         'origin_postal_code' => env('BITESHIP_ORIGIN_POSTAL_CODE', '16320'),
         'origin_latitude' => (float) env('BITESHIP_ORIGIN_LATITUDE', -6.4714015),
         'origin_longitude' => (float) env('BITESHIP_ORIGIN_LONGITUDE', 106.7453021),
+        'webhook_secret' => env('BITESHIP_WEBHOOK_SECRET', ''),
+        'auto_create_order' => (bool) env('BITESHIP_AUTO_CREATE_ORDER', true),
     ],
 
     'xendit' => [

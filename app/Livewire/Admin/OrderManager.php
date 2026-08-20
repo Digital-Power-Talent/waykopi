@@ -110,6 +110,81 @@ class OrderManager extends Component
         $this->closeOrderModal();
     }
 
+    public function sendToBiteship(int $orderId, ?\App\Services\BiteshipService $biteshipService = null): void
+    {
+        $order = Order::with(['items.productVariant.product', 'payment', 'shipment'])->find($orderId);
+        if (! $order) {
+            return;
+        }
+
+        $biteshipService = $biteshipService ?? app(\App\Services\BiteshipService::class);
+        $result = $biteshipService->createOrder($order);
+
+        if ($result['success']) {
+            $order->refresh();
+            $resiMsg = $order->shipment?->tracking_number ? " Resi: {$order->shipment->tracking_number}." : '';
+            $this->statusMessage = "Pesanan #{$order->order_number} berhasil dikirim ke Biteship (ID: {$order->shipment?->biteship_order_id}).{$resiMsg}";
+
+            if ($this->selectedOrder && $this->selectedOrder->id === $order->id) {
+                $this->selectedOrder = $order;
+                $this->trackingNumber = (string) ($order->shipment?->tracking_number ?? '');
+            }
+        } else {
+            $this->statusMessage = "Gagal mengirim ke Biteship: {$result['message']}";
+        }
+    }
+
+    public function syncBiteshipStatus(int $orderId, ?\App\Services\BiteshipService $biteshipService = null): void
+    {
+        $order = Order::with(['items', 'payment', 'shipment'])->find($orderId);
+        if (! $order || ! $order->shipment?->biteship_order_id) {
+            $this->statusMessage = 'Pesanan ini belum memiliki ID Biteship.';
+
+            return;
+        }
+
+        $biteshipService = $biteshipService ?? app(\App\Services\BiteshipService::class);
+        $biteshipOrder = $biteshipService->getOrder($order->shipment->biteship_order_id);
+
+        if ($biteshipOrder) {
+            $biteshipStatus = (string) ($biteshipOrder['status'] ?? '');
+            $courierData = $biteshipOrder['courier'] ?? [];
+            $waybill = (string) ($courierData['waybill_id'] ?? $courierData['tracking_id'] ?? '');
+            $labelUrl = (string) ($courierData['link'] ?? '');
+
+            $shipmentStatus = match (strtolower($biteshipStatus)) {
+                'delivered' => 'delivered',
+                'cancelled', 'rejected' => 'failed',
+                'picking_up', 'picked', 'dropping_off', 'in_transit' => 'in_transit',
+                default => 'booked',
+            };
+
+            $order->shipment->update([
+                'status' => $shipmentStatus,
+                'tracking_number' => $waybill ?: $order->shipment->tracking_number,
+                'label_url' => $labelUrl ?: $order->shipment->label_url,
+                'delivered_at' => $shipmentStatus === 'delivered' ? now() : $order->shipment->delivered_at,
+                'shipped_at' => in_array($shipmentStatus, ['in_transit', 'delivered']) ? ($order->shipment->shipped_at ?: now()) : null,
+            ]);
+
+            if ($shipmentStatus === 'delivered' && $order->status !== 'delivered') {
+                $order->recordStatusChange('delivered', auth()->id(), 'Sinkronisasi Biteship: Status DELIVERED');
+            } elseif (in_array($shipmentStatus, ['in_transit']) && in_array($order->status, ['paid', 'processing'])) {
+                $order->recordStatusChange('shipped', auth()->id(), "Sinkronisasi Biteship: Resi {$waybill}");
+            }
+
+            $order->refresh();
+            $this->statusMessage = "Status pesanan #{$order->order_number} berhasil disinkronkan dari Biteship (Status: {$biteshipStatus}).";
+
+            if ($this->selectedOrder && $this->selectedOrder->id === $order->id) {
+                $this->selectedOrder = $order;
+                $this->trackingNumber = (string) ($order->shipment?->tracking_number ?? '');
+            }
+        } else {
+            $this->statusMessage = "Tidak dapat mengambil data status dari Biteship untuk pesanan #{$order->order_number}.";
+        }
+    }
+
     public function render(): View
     {
         $query = Order::with(['items', 'payment', 'shipment'])->latest();

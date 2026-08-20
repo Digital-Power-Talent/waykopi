@@ -39,6 +39,7 @@ Route::get('/checkout/{orderNumber}/success', OrderSuccessPage::class)->name('ch
 
 // Webhook Routes (CSRF Excluded in bootstrap/app.php)
 Route::post('/webhooks/xendit', XenditWebhookController::class)->middleware('throttle:60,1')->name('webhooks.xendit');
+Route::post('/webhooks/biteship', \App\Http\Controllers\Webhooks\BiteshipWebhookController::class)->middleware('throttle:60,1')->name('webhooks.biteship');
 
 // Customer Account Dashboard (Gated by Auth Middleware)
 Route::get('/account', AccountDashboard::class)->middleware(['auth'])->name('account');

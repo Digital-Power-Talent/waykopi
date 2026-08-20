@@ -194,6 +194,74 @@
                         @endforeach
                     </div>
 
+                    <!-- Voucher Input Section -->
+                    <div class="p-4 bg-[var(--color-bg-base)] border border-[var(--color-coffee-brown)] rounded-[var(--radius-sm)] space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-semibold text-[var(--color-text-primary)] uppercase tracking-wider font-mono flex items-center gap-1.5">
+                                <span>🎟️</span>
+                                <span>Voucher Diskon Ongkir</span>
+                            </label>
+                            @if($appliedVoucherCode)
+                                <span class="px-2 py-0.5 text-[9px] uppercase font-bold text-emerald-400 bg-emerald-950 border border-emerald-700/50 rounded">
+                                    Aktif
+                                </span>
+                            @endif
+                        </div>
+
+                        @if($appliedVoucherCode)
+                            <div class="p-3 bg-emerald-950/40 border border-emerald-700/50 rounded flex items-center justify-between">
+                                <div>
+                                    <span class="font-bold text-xs text-emerald-400 font-mono block">
+                                        ✓ {{ $appliedVoucherCode }}
+                                    </span>
+                                    <span class="text-[10px] text-emerald-300/80 block">
+                                        Potongan gratis ongkir s.d. Rp 10.000
+                                    </span>
+                                </div>
+                                <button type="button" wire:click="removeVoucher" class="px-2 py-1 text-[10px] text-red-400 hover:text-red-300 border border-red-500/30 rounded hover:bg-red-500/10 font-mono transition-colors">
+                                    ✕ Hapus
+                                </button>
+                            </div>
+                        @else
+                            <div class="flex items-center gap-2">
+                                <input type="text" 
+                                       wire:model="voucherInput" 
+                                       placeholder="Kode: WAYKOPI100" 
+                                       class="w-full px-3 py-2 bg-[var(--color-bg-surface)] border border-[var(--color-coffee-brown)] rounded-[var(--radius-sm)] text-xs text-[var(--color-text-primary)] uppercase font-mono tracking-wider focus:outline-none focus:border-[var(--color-accent-gold)]"
+                                       @keydown.enter.prevent="$wire.applyVoucher()">
+                                <button type="button" 
+                                        wire:click="applyVoucher" 
+                                        class="px-4 py-2 bg-[var(--color-accent-gold)] text-[var(--color-bg-base)] font-bold text-xs rounded-[var(--radius-sm)] hover:bg-[var(--color-accent-gold-bright)] transition-colors whitespace-nowrap">
+                                    Pakai
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between text-[10px] font-mono">
+                                <button type="button" 
+                                        wire:click="$set('voucherInput', 'WAYKOPI100'); $wire.applyVoucher()" 
+                                        class="text-amber-400/90 hover:text-amber-300 underline flex items-center gap-1">
+                                    <span>⚡ Gunakan kode</span>
+                                    <strong class="font-bold">WAYKOPI100</strong>
+                                </button>
+                                <span class="text-[var(--color-text-muted)]">Maks. 10rb</span>
+                            </div>
+                        @endif
+
+                        @if($voucherMessage)
+                            <div class="text-xs text-emerald-400 font-mono flex items-center gap-1">
+                                <span>✓</span>
+                                <span>{{ $voucherMessage }}</span>
+                            </div>
+                        @endif
+
+                        @if($voucherError)
+                            <div class="text-xs text-[var(--color-error)] font-mono flex items-center gap-1">
+                                <span>⚠️</span>
+                                <span>{{ $voucherError }}</span>
+                            </div>
+                        @endif
+                    </div>
+
                     <!-- Cost Breakdown -->
                     <div class="space-y-3 pt-4 border-t border-[var(--color-coffee-brown)] text-sm font-mono">
                         <div class="flex items-center justify-between text-[var(--color-text-muted)]">
@@ -211,6 +279,13 @@
                                 @endif
                             </span>
                         </div>
+
+                        @if($discountAmount > 0)
+                            <div class="flex items-center justify-between text-emerald-400 font-bold">
+                                <span>Diskon Ongkir ({{ $appliedVoucherCode }})</span>
+                                <span>- Rp {{ number_format($discountAmount, 0, ',', '.') }}</span>
+                            </div>
+                        @endif
 
                         <div class="flex items-center justify-between text-base pt-3 border-t border-[var(--color-coffee-brown)]">
                             <span class="font-bold text-[var(--color-text-primary)]">Total Bayar</span>

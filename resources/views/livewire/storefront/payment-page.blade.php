@@ -29,8 +29,14 @@
                     <div class="font-display text-3xl md:text-4xl font-bold text-[var(--color-accent-gold)] tracking-tight">
                         Rp {{ number_format($order->total, 0, ',', '.') }}
                     </div>
-                    <div class="text-xs font-mono text-[var(--color-text-muted)] mt-1">
-                        Subtotal + Ongkir: Rp {{ number_format($order->subtotal + $order->shipping_cost, 0, ',', '.') }} + <span class="text-amber-400 font-bold">Kode Unik: Rp {{ number_format($order->unique_code, 0, ',', '.') }}</span>
+                    <div class="text-xs font-mono text-[var(--color-text-muted)] mt-1 space-y-0.5">
+                        <div>
+                            Subtotal + Ongkir: Rp {{ number_format($order->subtotal + $order->shipping_cost, 0, ',', '.') }}
+                            @if($order->discount_amount > 0)
+                                <span class="text-emerald-400 font-bold"> - Diskon ({{ $order->voucher_code ?: 'Voucher' }}): Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</span>
+                            @endif
+                            + <span class="text-amber-400 font-bold">Kode Unik: Rp {{ number_format($order->unique_code, 0, ',', '.') }}</span>
+                        </div>
                     </div>
 
                     <button 

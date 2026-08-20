@@ -11,7 +11,8 @@ class OrderService
 {
     public function __construct(
         protected CartService $cartService,
-        protected ?NotificationService $notificationService = null
+        protected ?NotificationService $notificationService = null,
+        protected ?BiteshipService $biteshipService = null
     ) {
     }
 
@@ -29,8 +30,11 @@ class OrderService
      *     postal_code?: string|null,
      *     destination_area_id: string,
      *     courier_code: string,
+     *     courier_service_code?: string|null,
      *     courier_service_name: string,
      *     shipping_fee: float,
+     *     voucher_code?: string|null,
+     *     discount_amount?: float|null,
      *     payment_method?: string|null,
      *     notes?: string|null,
      *     user_id?: int|null
@@ -78,8 +82,11 @@ class OrderService
             }
 
             $shippingFee = max(0.0, (float) $checkoutData['shipping_fee']);
+            $discountAmount = max(0.0, (float) ($checkoutData['discount_amount'] ?? 0.0));
+            $voucherCode = ! empty($checkoutData['voucher_code']) ? strtoupper(trim((string) $checkoutData['voucher_code'])) : null;
+
             $uniqueCode = rand(100, 999);
-            $totalAmount = $subtotal + $shippingFee + $uniqueCode;
+            $totalAmount = max(0.0, $subtotal + $shippingFee - $discountAmount) + $uniqueCode;
             $paymentMethod = $checkoutData['payment_method'] ?? 'bank_transfer';
             $initialStatus = ($paymentMethod === 'cod') ? 'processing' : 'pending_payment';
 
@@ -96,6 +103,8 @@ class OrderService
                 'postal_code' => $checkoutData['postal_code'] ?? '16115',
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shippingFee,
+                'voucher_code' => $voucherCode,
+                'discount_amount' => $discountAmount,
                 'unique_code' => $uniqueCode,
                 'total' => $totalAmount,
                 'status' => $initialStatus,
@@ -115,7 +124,9 @@ class OrderService
             Shipment::create([
                 'order_id' => $order->id,
                 'courier_code' => $checkoutData['courier_code'],
+                'courier_service_code' => $checkoutData['courier_service_code'] ?? null,
                 'courier_service' => $checkoutData['courier_service_name'],
+                'destination_area_id' => $checkoutData['destination_area_id'] ?? null,
                 'status' => 'pending',
             ]);
 
@@ -131,6 +142,16 @@ class OrderService
 
             return $order;
         });
+
+        // Trigger Biteship order creation for COD or auto-create setting
+        if (config('services.biteship.auto_create_order', true) && ($checkoutData['payment_method'] ?? 'bank_transfer') === 'cod') {
+            try {
+                $biteshipService = $this->biteshipService ?? app(BiteshipService::class);
+                $biteshipService->createOrder($order);
+            } catch (\Throwable $e) {
+                // Keep order created even if Biteship request encounters an issue
+            }
+        }
 
         // Trigger WhatsApp Notification asynchronously
         try {

@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Order;
+use App\Models\Shipment;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -11,6 +14,14 @@ class BiteshipService
     protected string $apiKey;
 
     protected string $baseUrl = 'https://api.biteship.com/v1';
+
+    protected string $originContactName;
+
+    protected string $originContactPhone;
+
+    protected string $originAddress;
+
+    protected string $originNote;
 
     protected string $originAreaId;
 
@@ -23,7 +34,11 @@ class BiteshipService
     public function __construct()
     {
         $this->apiKey = (string) config('services.biteship.api_key', '');
-        $this->originAreaId = (string) config('services.biteship.origin_area_id', 'IDNP6IDNC384IDND3355');
+        $this->originContactName = (string) config('services.biteship.origin_contact_name', 'Way Kopi Roastery');
+        $this->originContactPhone = (string) config('services.biteship.origin_contact_phone', '081234567890');
+        $this->originAddress = (string) config('services.biteship.origin_address', 'Jl. Raya Tajurhalang No. 12, Kab. Bogor, Jawa Barat');
+        $this->originNote = (string) config('services.biteship.origin_note', 'Dekat gerbang utama Way Kopi Roastery');
+        $this->originAreaId = (string) config('services.biteship.origin_area_id', 'IDNP9IDNC74IDND6752IDZ16320');
         $this->originPostalCode = (string) config('services.biteship.origin_postal_code', '16320');
         $this->originLatitude = (float) config('services.biteship.origin_latitude', -6.467812);
         $this->originLongitude = (float) config('services.biteship.origin_longitude', 106.758412);
@@ -140,7 +155,7 @@ class BiteshipService
      * @param  array<int, array{name: string, value: float, quantity: int, weight: int}>  $items
      * @return array<int, array{courier_code: string, courier_name: string, courier_service_code: string, courier_service_name: string, price: float, duration: string}>
      */
-    public function getRatesByCoordinates(float $destinationLat, float $destinationLng, array $items, ?float $originLat = null, ?float $originLng = null, string $couriers = 'jne,jnt,sicepat,pos'): array
+    public function getRatesByCoordinates(float $destinationLat, float $destinationLng, array $items, ?float $originLat = null, ?float $originLng = null, string $couriers = 'jne,jnt,sicepat,tiki,anteraja,pos'): array
     {
         $payload = [
             'origin_latitude' => $originLat ?: $this->originLatitude,
@@ -160,7 +175,7 @@ class BiteshipService
      * @param  array<int, array{name: string, value: float, quantity: int, weight: int}>  $items
      * @return array<int, array{courier_code: string, courier_name: string, courier_service_code: string, courier_service_name: string, price: float, duration: string}>
      */
-    public function getRatesByPostalCodes(int|string $destinationPostalCode, array $items, int|string|null $originPostalCode = null, string $couriers = 'jne,jnt,sicepat,pos'): array
+    public function getRatesByPostalCodes(int|string $destinationPostalCode, array $items, int|string|null $originPostalCode = null, string $couriers = 'jne,jnt,sicepat,tiki,anteraja,pos'): array
     {
         $payload = [
             'origin_postal_code' => (int) ($originPostalCode ?: $this->originPostalCode),
@@ -178,7 +193,7 @@ class BiteshipService
      * @param  array<int, array{name: string, value: float, quantity: int, weight: int}>  $items
      * @return array<int, array{courier_code: string, courier_name: string, courier_service_code: string, courier_service_name: string, price: float, duration: string}>
      */
-    public function getRatesByAreaId(string $destinationAreaId, array $items, ?string $originAreaId = null, string $couriers = 'jne,jnt,sicepat,pos'): array
+    public function getRatesByAreaId(string $destinationAreaId, array $items, ?string $originAreaId = null, string $couriers = 'jne,jnt,sicepat,tiki,anteraja,pos'): array
     {
         if (empty($destinationAreaId)) {
             return [];
@@ -202,7 +217,7 @@ class BiteshipService
      * @param  array<int, array{name: string, value: float, quantity: int, weight: int}>  $items
      * @return array<int, array{courier_code: string, courier_name: string, courier_service_code: string, courier_service_name: string, price: float, duration: string}>
      */
-    public function getRatesByMix(array $origin, array $destination, array $items, string $couriers = 'jne,jnt,sicepat,pos'): array
+    public function getRatesByMix(array $origin, array $destination, array $items, string $couriers = 'jne,jnt,sicepat,tiki,anteraja,pos'): array
     {
         $payload = array_merge($origin, $destination, [
             'couriers' => $couriers,
@@ -218,7 +233,7 @@ class BiteshipService
      * @param  array<int, array{name: string, value: float, quantity: int, weight: int}>  $items
      * @return array<int, array{courier_code: string, courier_name: string, courier_service_code: string, courier_service_name: string, price: float, duration: string}>
      */
-    public function getRatesByType(string $destinationAreaId, array $items, string $type = 'standard', ?string $originAreaId = null, string $couriers = 'jne,jnt,sicepat,pos'): array
+    public function getRatesByType(string $destinationAreaId, array $items, string $type = 'standard', ?string $originAreaId = null, string $couriers = 'jne,jnt,sicepat,tiki,anteraja,pos'): array
     {
         $payload = [
             'origin_area_id' => $originAreaId ?: $this->originAreaId,
@@ -237,7 +252,7 @@ class BiteshipService
      * @param  array<int, array{name: string, value: float, quantity: int, weight: int}>  $items
      * @return array<int, array{courier_code: string, courier_name: string, courier_service_code: string, courier_service_name: string, price: float, duration: string}>
      */
-    public function calculateRates(string $destinationAreaId, array $items, string $couriers = 'jne,jnt,sicepat,pos'): array
+    public function calculateRates(string $destinationAreaId, array $items, string $couriers = 'jne,jnt,sicepat,tiki,anteraja,pos'): array
     {
         return $this->getRatesByAreaId($destinationAreaId, $items, null, $couriers);
     }
@@ -251,7 +266,7 @@ class BiteshipService
     {
         $allMocks = [
             [
-                'id' => 'IDNP6IDNC384IDND3355',
+                'id' => 'IDNP9IDNC74IDND6752IDZ16320',
                 'name' => 'Tajurhalang, Kab. Bogor, Jawa Barat (16320)',
                 'country_name' => 'Indonesia',
                 'administrative_division_level_1_name' => 'Jawa Barat',
@@ -358,6 +373,324 @@ class BiteshipService
                 'courier_service_name' => 'REG (Reguler)',
                 'price' => 12000.00 * $multiplier,
                 'duration' => '2 - 3 Hari',
+            ],
+        ];
+    }
+
+    /**
+     * Create an Order in Biteship (POST /v1/orders).
+     *
+     * @param  array<string, mixed>  $overrideParams
+     * @return array{success: bool, message: string, order_id?: string, tracking_number?: string, label_url?: string, status?: string, data?: array<string, mixed>}
+     */
+    public function createOrder(Order $order, array $overrideParams = []): array
+    {
+        $order->loadMissing(['items.productVariant.product', 'payment', 'shipment', 'user']);
+
+        /** @var Shipment|null $shipment */
+        $shipment = $order->shipment;
+        $courierCompany = strtolower((string) ($overrideParams['courier_company'] ?? $shipment?->courier_code ?? 'jne'));
+        $courierType = strtolower((string) ($overrideParams['courier_type'] ?? $shipment?->courier_service_code ?? 'reg'));
+
+        if (empty($courierType) && ! empty($shipment?->courier_service)) {
+            $parts = explode(' ', strtolower(trim((string) $shipment->courier_service)));
+            $courierType = end($parts) ?: 'reg';
+        }
+
+        $itemsPayload = [];
+        foreach ($order->items as $item) {
+            $variant = $item->productVariant;
+            $itemsPayload[] = [
+                'name' => $item->product_name.($item->variant_label ? " ({$item->variant_label})" : ''),
+                'description' => 'Produk Kopi Way Kopi',
+                'category' => 'food_and_drink',
+                'value' => (float) $item->price_at_purchase,
+                'quantity' => (int) $item->quantity,
+                'weight' => (int) ($variant?->weight_grams ?? 250),
+                'length' => 10,
+                'width' => 10,
+                'height' => 10,
+            ];
+        }
+
+        if (empty($itemsPayload)) {
+            $itemsPayload[] = [
+                'name' => "Pesanan {$order->order_number}",
+                'description' => 'Kopi Sangrai Way Kopi',
+                'category' => 'food_and_drink',
+                'value' => (float) ($order->subtotal > 0 ? $order->subtotal : 50000),
+                'quantity' => 1,
+                'weight' => 250,
+                'length' => 10,
+                'width' => 10,
+                'height' => 10,
+            ];
+        }
+
+        $isCod = ($order->payment?->method === 'cod');
+
+        $payload = [
+            'shipper_contact_name' => $this->originContactName,
+            'shipper_contact_phone' => $this->originContactPhone,
+            'origin_contact_name' => $this->originContactName,
+            'origin_contact_phone' => $this->originContactPhone,
+            'origin_address' => $this->originAddress,
+            'origin_note' => $this->originNote,
+            'origin_postal_code' => (int) $this->originPostalCode,
+            'origin_area_id' => $this->originAreaId,
+            'origin_coordinate' => [
+                'latitude' => $this->originLatitude,
+                'longitude' => $this->originLongitude,
+            ],
+            'destination_contact_name' => $order->recipient_name,
+            'destination_contact_phone' => (string) ($order->recipient_phone ?: ($order->guest_phone ?: '081234567890')),
+            'destination_contact_email' => $order->guest_email ?: ($order->user?->email ?: null),
+            'destination_address' => $order->shipping_address,
+            'destination_postal_code' => (int) ($order->postal_code ?: 16115),
+            'courier_company' => $courierCompany,
+            'courier_type' => $courierType,
+            'delivery_type' => 'now',
+            'order_note' => (string) ($order->notes ?: ''),
+            'reference_id' => (string) $order->order_number,
+            'items' => $itemsPayload,
+        ];
+
+        if (! empty($shipment?->destination_area_id)) {
+            $payload['destination_area_id'] = $shipment->destination_area_id;
+        }
+
+        if ($isCod) {
+            $payload['destination_cash_on_delivery'] = (float) $order->total;
+            $payload['destination_cash_on_delivery_type'] = '7_days';
+        }
+
+        $payload = array_merge($payload, $overrideParams);
+
+        if (empty($this->apiKey) || str_starts_with($this->apiKey, 'mock_')) {
+            return $this->getMockCreatedOrder($order, $payload);
+        }
+
+        try {
+            $response = $this->httpClient()->post("{$this->baseUrl}/orders", $payload);
+            $responseData = $response->json() ?? [];
+
+            if ($response->successful() && ! empty($responseData['id'])) {
+                $biteshipOrderId = (string) $responseData['id'];
+                $courierData = $responseData['courier'] ?? [];
+                $waybillId = (string) ($courierData['waybill_id'] ?? $courierData['tracking_id'] ?? '');
+                $labelUrl = (string) ($courierData['link'] ?? '');
+                $biteshipStatus = (string) ($responseData['status'] ?? 'placed');
+
+                if ($shipment) {
+                    $shipmentStatus = match (strtolower($biteshipStatus)) {
+                        'delivered' => 'delivered',
+                        'cancelled', 'rejected' => 'failed',
+                        'picking_up', 'picked', 'dropping_off', 'in_transit' => 'in_transit',
+                        default => 'booked',
+                    };
+
+                    $shipment->update([
+                        'biteship_order_id' => $biteshipOrderId,
+                        'tracking_number' => $waybillId ?: $shipment->tracking_number,
+                        'label_url' => $labelUrl ?: $shipment->label_url,
+                        'status' => $shipmentStatus,
+                    ]);
+                }
+
+                $order->recordStatusChange(
+                    $order->status === 'pending_payment' ? 'processing' : $order->status,
+                    Auth::id(),
+                    "Pesanan berhasil didaftarkan ke Biteship (ID: {$biteshipOrderId})".($waybillId ? ", Resi: {$waybillId}" : '')
+                );
+
+                return [
+                    'success' => true,
+                    'message' => 'Pesanan berhasil didaftarkan ke Biteship.',
+                    'order_id' => $biteshipOrderId,
+                    'tracking_number' => $waybillId,
+                    'label_url' => $labelUrl,
+                    'status' => $biteshipStatus,
+                    'data' => $responseData,
+                ];
+            }
+
+            $errorMessage = $responseData['error'] ?? $responseData['message'] ?? 'Biteship API Error ('.$response->status().')';
+            Log::warning("Biteship createOrder error: {$errorMessage}", ['response' => $responseData]);
+
+            return [
+                'success' => false,
+                'message' => "Gagal membuat pesanan di Biteship: {$errorMessage}",
+                'data' => $responseData,
+            ];
+        } catch (\Throwable $e) {
+            Log::error("Biteship createOrder exception: {$e->getMessage()}");
+
+            return [
+                'success' => false,
+                'message' => "Terjadi kesalahan koneksi ke Biteship: {$e->getMessage()}",
+            ];
+        }
+    }
+
+    /**
+     * Retrieve Order from Biteship (GET /v1/orders/:id).
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getOrder(string $biteshipOrderId): ?array
+    {
+        if (empty($biteshipOrderId)) {
+            return null;
+        }
+
+        if (empty($this->apiKey) || str_starts_with($this->apiKey, 'mock_')) {
+            return [
+                'id' => $biteshipOrderId,
+                'status' => 'allocated',
+                'courier' => [
+                    'company' => 'jne',
+                    'type' => 'reg',
+                    'waybill_id' => 'WYB-'.substr(md5($biteshipOrderId), 0, 10),
+                    'link' => "https://biteship.com/labels/{$biteshipOrderId}",
+                ],
+            ];
+        }
+
+        try {
+            $response = $this->httpClient()->get("{$this->baseUrl}/orders/{$biteshipOrderId}");
+            if ($response->successful()) {
+                return $response->json();
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Biteship getOrder failed for {$biteshipOrderId}: {$e->getMessage()}");
+        }
+
+        return null;
+    }
+
+    /**
+     * Cancel an Order in Biteship (POST /v1/orders/:id/cancel).
+     *
+     * @return array{success: bool, message: string, data?: array<string, mixed>}
+     */
+    public function cancelOrder(string $biteshipOrderId, string $reasonCode = 'others', ?string $reason = null): array
+    {
+        if (empty($biteshipOrderId)) {
+            return ['success' => false, 'message' => 'Biteship Order ID tidak boleh kosong.'];
+        }
+
+        if (empty($this->apiKey) || str_starts_with($this->apiKey, 'mock_')) {
+            return [
+                'success' => true,
+                'message' => 'Pesanan Biteship berhasil dibatalkan (Mock).',
+                'data' => [
+                    'id' => $biteshipOrderId,
+                    'status' => 'cancelled',
+                ],
+            ];
+        }
+
+        try {
+            $response = $this->httpClient()->post("{$this->baseUrl}/orders/{$biteshipOrderId}/cancel", [
+                'cancellation_reason_code' => $reasonCode,
+                'cancellation_reason' => $reason ?: 'Dibatalkan oleh Penjual / Admin',
+            ]);
+
+            $responseData = $response->json() ?? [];
+
+            if ($response->successful()) {
+                return [
+                    'success' => true,
+                    'message' => 'Pesanan di Biteship berhasil dibatalkan.',
+                    'data' => $responseData,
+                ];
+            }
+
+            $errorMessage = $responseData['error'] ?? $responseData['message'] ?? 'Gagal membatalkan pesanan Biteship.';
+
+            return [
+                'success' => false,
+                'message' => $errorMessage,
+                'data' => $responseData,
+            ];
+        } catch (\Throwable $e) {
+            Log::error("Biteship cancelOrder failed: {$e->getMessage()}");
+
+            return [
+                'success' => false,
+                'message' => "Terjadi kesalahan saat membatalkan order di Biteship: {$e->getMessage()}",
+            ];
+        }
+    }
+
+    /**
+     * Get Public Tracking by Waybill & Courier Code.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getTracking(string $waybillId, string $courierCode): ?array
+    {
+        if (empty($waybillId) || empty($courierCode)) {
+            return null;
+        }
+
+        try {
+            $response = $this->httpClient()->get("{$this->baseUrl}/trackings/{$waybillId}/couriers/{$courierCode}");
+            if ($response->successful()) {
+                return $response->json();
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Biteship getTracking failed for {$waybillId}: {$e->getMessage()}");
+        }
+
+        return null;
+    }
+
+    /**
+     * Mock order creation for testing or missing API key.
+     *
+     * @param  array<string, mixed>  $payload
+     * @return array{success: bool, message: string, order_id: string, tracking_number: string, label_url: string, status: string, data: array<string, mixed>}
+     */
+    protected function getMockCreatedOrder(Order $order, array $payload): array
+    {
+        $mockId = 'BTS-'.strtoupper(bin2hex(random_bytes(6)));
+        $mockWaybill = 'WYB-'.rand(1000000000, 9999999999);
+        $mockLabel = "https://biteship.com/labels/{$mockId}";
+
+        /** @var Shipment|null $shipment */
+        $shipment = $order->shipment;
+        if ($shipment) {
+            $shipment->update([
+                'biteship_order_id' => $mockId,
+                'tracking_number' => $mockWaybill,
+                'label_url' => $mockLabel,
+                'status' => 'booked',
+            ]);
+        }
+
+        $order->recordStatusChange(
+            $order->status === 'pending_payment' ? 'processing' : $order->status,
+            Auth::id(),
+            "Pesanan berhasil didaftarkan ke Biteship (Mock ID: {$mockId}, Resi: {$mockWaybill})"
+        );
+
+        return [
+            'success' => true,
+            'message' => 'Pesanan berhasil dibuat di Biteship (Mode Mock/Testing).',
+            'order_id' => $mockId,
+            'tracking_number' => $mockWaybill,
+            'label_url' => $mockLabel,
+            'status' => 'placed',
+            'data' => [
+                'id' => $mockId,
+                'status' => 'placed',
+                'courier' => [
+                    'company' => $payload['courier_company'] ?? 'jne',
+                    'type' => $payload['courier_type'] ?? 'reg',
+                    'waybill_id' => $mockWaybill,
+                    'link' => $mockLabel,
+                ],
             ],
         ];
     }

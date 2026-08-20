@@ -26,6 +26,8 @@ class Order extends Model
         'postal_code',
         'subtotal',
         'shipping_cost',
+        'voucher_code',
+        'discount_amount',
         'unique_code',
         'total',
         'status',
@@ -37,6 +39,7 @@ class Order extends Model
     protected $casts = [
         'subtotal' => 'decimal:2',
         'shipping_cost' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
         'unique_code' => 'integer',
         'total' => 'decimal:2',
         'expires_at' => 'datetime',

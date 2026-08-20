@@ -41,6 +41,14 @@ class CheckoutPage extends Component
 
     public int $selectedCourierIndex = 0;
 
+    public string $voucherInput = '';
+
+    public string $appliedVoucherCode = '';
+
+    public string $voucherMessage = '';
+
+    public string $voucherError = '';
+
     public string $errorMessage = '';
 
     public function mount(): void
@@ -134,6 +142,44 @@ class CheckoutPage extends Component
         $this->selectedCourierIndex = $index;
     }
 
+    public function applyVoucher(): void
+    {
+        $this->voucherError = '';
+        $this->voucherMessage = '';
+
+        $clean = strtoupper(trim($this->voucherInput));
+
+        if (empty($clean)) {
+            $this->voucherError = 'Silakan masukkan kode voucher.';
+
+            return;
+        }
+
+        if ($clean === 'WAYKOPI100') {
+            $this->appliedVoucherCode = 'WAYKOPI100';
+            $this->voucherInput = 'WAYKOPI100';
+            $this->voucherMessage = 'Voucher WAYKOPI100 berhasil digunakan! Diskon ongkir s.d. Rp 10.000.';
+        } else {
+            $this->appliedVoucherCode = '';
+            $this->voucherError = "Kode voucher '{$this->voucherInput}' tidak valid.";
+        }
+    }
+
+    public function removeVoucher(): void
+    {
+        $this->appliedVoucherCode = '';
+        $this->voucherInput = '';
+        $this->voucherMessage = '';
+        $this->voucherError = '';
+    }
+
+    public function getSelectedShippingFee(): float
+    {
+        return isset($this->shippingRates[$this->selectedCourierIndex])
+            ? (float) $this->shippingRates[$this->selectedCourierIndex]['price']
+            : 0.0;
+    }
+
     public function processCheckout(?OrderService $orderService = null, ?CartService $cartService = null): void
     {
         $orderService = $orderService ?? app(OrderService::class);
@@ -161,6 +207,8 @@ class CheckoutPage extends Component
         }
 
         $selectedRate = $this->shippingRates[$this->selectedCourierIndex];
+        $shippingFee = (float) $selectedRate['price'];
+        $discountAmount = ($this->appliedVoucherCode === 'WAYKOPI100') ? min($shippingFee, 10000.0) : 0.0;
 
         try {
             $order = $orderService->createOrder([
@@ -170,8 +218,11 @@ class CheckoutPage extends Component
                 'shipping_address' => $this->address.' ('.$this->areaName.')',
                 'destination_area_id' => $this->destinationAreaId,
                 'courier_code' => $selectedRate['courier_code'],
+                'courier_service_code' => $selectedRate['courier_service_code'] ?? null,
                 'courier_service_name' => $selectedRate['courier_name'].' '.$selectedRate['courier_service_name'],
-                'shipping_fee' => (float) $selectedRate['price'],
+                'shipping_fee' => $shippingFee,
+                'voucher_code' => $this->appliedVoucherCode ?: null,
+                'discount_amount' => $discountAmount,
                 'payment_method' => $this->paymentMethod,
                 'notes' => $this->notes,
                 'user_id' => Auth::id(),
@@ -193,16 +244,17 @@ class CheckoutPage extends Component
         $subtotal = $cartService->getSubtotal();
         $totalWeight = $cartService->getTotalWeightGrams();
 
-        $selectedShippingFee = isset($this->shippingRates[$this->selectedCourierIndex])
-            ? (float) $this->shippingRates[$this->selectedCourierIndex]['price']
-            : 0.0;
+        $selectedShippingFee = $this->getSelectedShippingFee();
+        $discountAmount = ($this->appliedVoucherCode === 'WAYKOPI100') ? min($selectedShippingFee, 10000.0) : 0.0;
+        $grandTotal = max(0.0, $subtotal + $selectedShippingFee - $discountAmount);
 
         return view('livewire.storefront.checkout-page', [
             'cartItems' => $cartItems,
             'subtotal' => $subtotal,
             'totalWeight' => $totalWeight,
             'selectedShippingFee' => $selectedShippingFee,
-            'grandTotal' => $subtotal + $selectedShippingFee,
+            'discountAmount' => $discountAmount,
+            'grandTotal' => $grandTotal,
         ]);
     }
 }
