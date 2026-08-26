@@ -85,7 +85,7 @@ class Dashboard extends Component
 
         if ($id) {
             /** @var Address|null $address */
-            $address = Address::where('user_id', '=', Auth::id())->find($id);
+            $address = Address::query()->where('user_id', '=', Auth::id(), 'and')->find($id, ['*']);
             if ($address) {
                 $this->editingAddressId = $address->id;
                 $this->label = $address->label;
@@ -135,10 +135,10 @@ class Dashboard extends Component
         ]);
 
         if ($this->is_default) {
-            Address::where('user_id', '=', Auth::id())->update(['is_default' => false]);
+            Address::query()->where('user_id', '=', Auth::id(), 'and')->update(['is_default' => false]);
         }
 
-        Address::updateOrCreate(
+        Address::query()->updateOrCreate(
             ['id' => $this->editingAddressId, 'user_id' => Auth::id()],
             [
                 'user_id' => Auth::id(),
@@ -160,7 +160,7 @@ class Dashboard extends Component
 
     public function deleteAddress(int $id): void
     {
-        Address::where('user_id', '=', Auth::id())->where('id', '=', $id)->delete();
+        Address::query()->where('user_id', '=', Auth::id(), 'and')->where('id', '=', $id, 'and')->delete();
         $this->statusMessage = 'Alamat pengiriman berhasil dihapus.';
     }
 
@@ -216,17 +216,17 @@ class Dashboard extends Component
         /** @var User $user */
         $user = Auth::user();
 
-        $orders = Order::with(['items.productVariant.product', 'shipment'])
+        $orders = Order::query()->with(['items.productVariant.product', 'shipment'])
             ->where(function ($q) use ($userId, $user) {
-                $q->where('user_id', '=', $userId);
+                $q->where('user_id', '=', $userId, 'and');
                 if (! empty($user->email)) {
                     $q->orWhere('guest_email', '=', $user->email);
                 }
             })
-            ->latest()
+            ->latest('id')
             ->paginate(10);
 
-        $addresses = Address::where('user_id', '=', $userId)->get();
+        $addresses = Address::query()->where('user_id', '=', $userId, 'and')->get();
 
         return view('livewire.account.dashboard', [
             'orders' => $orders,

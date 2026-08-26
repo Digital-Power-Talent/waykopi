@@ -8,6 +8,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property int $id
+ * @property string $order_number
+ * @property int|null $user_id
+ * @property string|null $guest_email
+ * @property string|null $guest_phone
+ * @property string $recipient_name
+ * @property string $recipient_phone
+ * @property string $shipping_address
+ * @property string|null $province
+ * @property string|null $city
+ * @property string|null $district
+ * @property string|null $postal_code
+ * @property float $subtotal
+ * @property float $shipping_cost
+ * @property string|null $voucher_code
+ * @property float $discount_amount
+ * @property int $unique_code
+ * @property float $total
+ * @property string $status
+ * @property string|null $courier_name
+ * @property string|null $notes
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User|null $user
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OrderItem> $items
+ * @property-read \App\Models\Payment|null $payment
+ * @property-read \App\Models\Shipment|null $shipment
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\OrderStatusHistory> $statusHistories
+ */
 class Order extends Model
 {
     use HasFactory;

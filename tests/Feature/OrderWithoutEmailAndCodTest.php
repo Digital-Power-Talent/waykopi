@@ -61,7 +61,7 @@ class OrderWithoutEmailAndCodTest extends TestCase
                 'duration' => '1-2 Hari',
             ],
         ]);
-        $this->app->instance(BiteshipService::class, $biteshipMock);
+        app()->instance(BiteshipService::class, $biteshipMock);
 
         Livewire::test('storefront.checkout-page')
             ->set('name', 'Budi Santoso')
@@ -76,7 +76,7 @@ class OrderWithoutEmailAndCodTest extends TestCase
             ->assertHasNoErrors();
 
         /** @var Order $order */
-        $order = Order::latest()->first();
+        $order = Order::query()->latest('id')->first();
         $this->assertNotNull($order);
         $this->assertNull($order->guest_email);
         $this->assertEquals('Budi Santoso', $order->recipient_name);
@@ -100,7 +100,7 @@ class OrderWithoutEmailAndCodTest extends TestCase
                 'duration' => '2-3 Hari',
             ],
         ]);
-        $this->app->instance(BiteshipService::class, $biteshipMock);
+        app()->instance(BiteshipService::class, $biteshipMock);
 
         Livewire::test('storefront.checkout-page')
             ->set('name', 'Siti Aminah')
@@ -115,7 +115,7 @@ class OrderWithoutEmailAndCodTest extends TestCase
             ->assertHasNoErrors();
 
         /** @var Order $order */
-        $order = Order::latest()->first();
+        $order = Order::query()->latest('id')->first();
         $this->assertNotNull($order);
         $this->assertEquals('siti@example.com', $order->guest_email);
         $this->assertEquals('processing', $order->status); // COD starts as processing

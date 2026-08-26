@@ -59,7 +59,7 @@ class ProductCatalog extends Component
     public function addToCart(int $variantId, CartService $cartService): void
     {
         /** @var ProductVariant|null $variant */
-        $variant = ProductVariant::with('product')->find($variantId);
+        $variant = ProductVariant::query()->with('product')->find($variantId, ['*']);
         if (! $variant || $variant->stock < 1) {
             session()->flash('error', 'Stok varian produk tidak mencukupi.');
 

@@ -60,7 +60,7 @@ class ProductManager extends Component
 
         if ($productId) {
             /** @var Product|null $product */
-            $product = Product::with(['variants', 'primaryImage'])->find($productId);
+            $product = Product::query()->with(['variants', 'primaryImage'])->find($productId, ['*']);
             if ($product) {
                 $this->editingProductId = $product->id;
                 $this->name = $product->name;

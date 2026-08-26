@@ -55,7 +55,7 @@ class CustomerManager extends Component
 
         if ($userId) {
             /** @var User|null $user */
-            $user = User::find($userId);
+            $user = User::query()->find($userId, ['*']);
             if ($user) {
                 $this->editingUserId = $user->id;
                 $this->name = $user->name;
@@ -114,7 +114,7 @@ class CustomerManager extends Component
             $data['password'] = Hash::make($this->password);
         }
 
-        $user = User::updateOrCreate(
+        $user = User::query()->updateOrCreate(
             ['id' => $this->editingUserId],
             $data
         );
@@ -132,17 +132,18 @@ class CustomerManager extends Component
             return;
         }
 
-        $user = User::find($userId);
+        /** @var User|null $user */
+        $user = User::query()->find($userId, ['*']);
         if ($user) {
             $name = $user->name;
-            $user->delete();
+            User::destroy($userId);
             $this->statusMessage = "Akun pelanggan '{$name}' berhasil dihapus.";
         }
     }
 
     public function render(): View
     {
-        $query = User::latest();
+        $query = User::query()->latest('id');
 
         if ($this->search) {
             $query->where(function ($q) {

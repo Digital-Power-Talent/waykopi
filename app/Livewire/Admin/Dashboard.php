@@ -16,15 +16,15 @@ class Dashboard extends Component
 {
     public function render(): View
     {
-        $totalRevenue = (float) Order::whereIn('status', ['paid', 'processing', 'shipped', 'delivered'])->sum('total');
-        $totalOrders = Order::count();
-        $pendingOrders = Order::where('status', 'pending_payment')->count();
-        $paidOrders = Order::whereIn('status', ['paid', 'delivered'])->count();
-        $totalProducts = Product::count();
-        $lowStockVariants = ProductVariant::with('product')->where('stock', '<', 10)->get();
+        $totalRevenue = (float) Order::query()->whereIn('status', ['paid', 'processing', 'shipped', 'delivered'], 'and', false)->sum('total');
+        $totalOrders = Order::query()->count('*');
+        $pendingOrders = Order::query()->where('status', '=', 'pending_payment')->count('*');
+        $paidOrders = Order::query()->whereIn('status', ['paid', 'delivered'], 'and', false)->count('*');
+        $totalProducts = Product::query()->count('*');
+        $lowStockVariants = ProductVariant::query()->with('product')->where('stock', '<', 10)->get();
 
-        $recentOrders = Order::with(['items', 'payment', 'shipment'])
-            ->latest()
+        $recentOrders = Order::query()->with(['items', 'payment', 'shipment'])
+            ->latest('id')
             ->take(8)
             ->get();
 

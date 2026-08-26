@@ -29,10 +29,12 @@ Setelah `npm run build` selesai, pastikan folder `public/build` sudah terbuat da
 Ada 2 metode penataan file di Hostinger hPanel:
 
 ### Opsi A: Subfolder Terpisah (Sangat Direkomendasikan untuk Keamanan)
+
 1. Buat folder di luar `public_html`, misalnya `/home/uXXXXXXX/waykopi/`.
 2. Upload seluruh source code proyek Laravel ke dalam folder `/home/uXXXXXXX/waykopi/`.
 3. Pindahkan atau upload isi folder `public/` ke dalam `/home/uXXXXXXX/public_html/`.
 4. Edit file `public_html/index.php`:
+
    ```php
    // Ubah path autoload & bootstrap agar mengarah ke folder waykopi
    require __DIR__.'/../waykopi/vendor/autoload.php';
@@ -40,6 +42,7 @@ Ada 2 metode penataan file di Hostinger hPanel:
    ```
 
 ### Opsi B: Seluruh Proyek di dalam `public_html` (Didukung oleh `.htaccess` Root)
+
 1. Upload seluruh folder proyek ke dalam `/home/uXXXXXXX/public_html/`.
 2. Pastikan file [`.htaccess`](file:///d:/Project/Waykopi%20v.2/.htaccess) di root sudah terpasang. File ini akan otomatis mengarahkan seluruh request pengunjung ke folder `/public` dan memblokir akses publik ke file sensitif (`.env`, `storage`, `artisan`, dll).
 
@@ -122,6 +125,7 @@ php artisan optimize
 
 > **Catatan Izin Folder (Permissions):**
 > Pastikan folder `storage` dan `bootstrap/cache` memiliki permission `775`:
+>
 > ```bash
 > chmod -R 775 storage bootstrap/cache
 > ```
@@ -137,15 +141,18 @@ Agar pembatalan otomatis pesanan yang kedaluwarsa (`CancelExpiredOrdersCommand`)
    - **Type:** Custom
    - **Schedule:** Setiap Menit (`* * * * *`)
    - **Command:**
+
      ```bash
      /usr/bin/php /home/uXXXXXXX/public_html/artisan schedule:run >> /dev/null 2>&1
      ```
+
      *(Ganti `/home/uXXXXXXX/public_html` dengan direktori root proyek Anda)*
 
 3. **Background Queue Worker (Untuk Notifikasi WA):**
    Tambahkan satu Cron Job untuk memproses antrean queue jika tidak menggunakan daemon SSH:
    - **Schedule:** Setiap Menit (`* * * * *`)
    - **Command:**
+
      ```bash
      /usr/bin/php /home/uXXXXXXX/public_html/artisan queue:work --stop-when-empty >> /dev/null 2>&1
      ```
@@ -157,9 +164,11 @@ Agar pembatalan otomatis pesanan yang kedaluwarsa (`CancelExpiredOrdersCommand`)
 1. Login ke [Dashboard Xendit](https://dashboard.xendit.co).
 2. Masuk ke menu **Settings** &rarr; **Webhooks**.
 3. Tambahkan URL webhook produksi:
-   ```
+
+   ```text
    https://waykopi.com/webhooks/xendit
    ```
+
 4. Masukkan **Webhook Verification Token** dari Xendit ke variable `XENDIT_WEBHOOK_TOKEN` di file `.env`.
 5. Centang event: **Invoice Paid**, **Invoice Expired**.
 
@@ -182,26 +191,31 @@ Agar pembatalan otomatis pesanan yang kedaluwarsa (`CancelExpiredOrdersCommand`)
 ## 8. Solusi Error Umum Deployment
 
 ### Error: `SQLSTATE[HY000] [1045] Access denied for user 'uXXXXXXXX_user'@'127.0.0.1'`
+
 Penyebab utama di Hostinger shared hosting:
+
 1. **Penggunaan IP `127.0.0.1` vs `localhost`**: Di Hostinger, user MySQL didaftarkan dengan host `localhost` (Unix socket). Ubah `DB_HOST=127.0.0.1` menjadi `DB_HOST=localhost` pada file `.env`.
 2. **Password Salah / Mengandung Karakter Khusus**: Jika password memiliki karakter khusus (seperti `#`, `$`, `!`), wajib dibungkus tanda petik dua di `.env`: `DB_PASSWORD="PasswordKopi123!"`.
 3. **Cache Konfigurasi Lama**: Jalankan `php artisan config:clear` terlebih dahulu sebelum mengulang `php artisan migrate --force`.
 
 ### Error: `Call to undefined function Illuminate\Filesystem\exec()` (saat `php artisan storage:link`)
+
 Penyebab utama di Hostinger shared hosting:
 Fungsi `symlink` dan `exec` diblokir secara default oleh Hostinger pada file `php.ini` demi alasan keamanan.
 
-**Solusi 1: Aktifkan via hPanel Hostinger (Sangat Mudah)**
+#### Solusi 1: Aktifkan via hPanel Hostinger (Sangat Mudah)
+
 1. Buka **hPanel Hostinger** &rarr; **Advanced** &rarr; **PHP Configuration**.
 2. Pilih tab **PHP Functions**.
 3. Pada daftar *Disable functions*, hapus `exec` dan `symlink`.
 4. Klik **Save**, lalu jalankan ulang `php artisan storage:link` di terminal SSH.
 
-**Solusi 2: Buat Symbolic Link Manual via Terminal SSH**
+#### Solusi 2: Buat Symbolic Link Manual via Terminal SSH
+
 Jika fungsi PHP tidak ingin diaktifkan, jalankan perintah Linux native di terminal SSH:
+
 ```bash
 ln -s /home/uXXXXXXX/domains/waykopi.com/storage/app/public /home/uXXXXXXX/domains/waykopi.com/public_html/storage
 ```
+
 *(Ganti `/home/uXXXXXXX/domains/waykopi.com` dengan path absolut akun hosting Anda)*
-
-

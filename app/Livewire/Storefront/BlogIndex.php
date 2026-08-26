@@ -37,13 +37,13 @@ class BlogIndex extends Component
 
     public function render(): View
     {
-        $categories = Post::where('status', 'published')
+        $categories = Post::query()->where('status', 'published')
             ->whereDate('published_at', '<=', now())
             ->whereNotNull('category')
             ->distinct()
             ->pluck('category');
 
-        $query = Post::with('author')
+        $query = Post::query()->with('author')
             ->where('status', 'published')
             ->whereDate('published_at', '<=', now())
             ->latest('published_at');

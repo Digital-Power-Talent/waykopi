@@ -24,7 +24,8 @@ class SendWhatsAppNotificationJob implements ShouldQueue
 
     public function handle(NotificationService $notificationService): void
     {
-        $order = Order::find($this->orderId);
+        /** @var Order|null $order */
+        $order = Order::query()->where('id', '=', $this->orderId)->first();
         if (! $order) {
             return;
         }

@@ -20,13 +20,13 @@ class BlogDetail extends Component
     public function render(): View
     {
         /** @var Post $post */
-        $post = Post::with('author')
+        $post = Post::query()->with('author')
             ->where('slug', $this->slug)
             ->where('status', 'published')
             ->whereDate('published_at', '<=', now())
             ->firstOrFail();
 
-        $relatedPosts = Post::where('status', 'published')
+        $relatedPosts = Post::query()->where('status', 'published')
             ->whereDate('published_at', '<=', now())
             ->where('id', '!=', $post->id)
             ->when($post->category, fn ($q) => $q->where('category', $post->category))

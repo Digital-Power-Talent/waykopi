@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Shipment;
 use App\Services\NotificationService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -44,7 +45,7 @@ class OrderManager extends Component
 
     public function openOrderModal(int $orderId): void
     {
-        $this->selectedOrder = Order::with(['items.productVariant.product', 'payment', 'shipment'])->find($orderId);
+        $this->selectedOrder = Order::query()->with(['items.productVariant.product', 'payment', 'shipment'])->find($orderId, ['*']);
         if ($this->selectedOrder) {
             $this->newStatus = $this->selectedOrder->status;
             /** @var Shipment|null $shipment */
@@ -76,7 +77,7 @@ class OrderManager extends Component
         $previousStatus = $this->selectedOrder->status;
 
         $note = "Diperbarui oleh Admin" . ($this->trackingNumber ? " (Resi: {$this->trackingNumber})" : '');
-        $this->selectedOrder->recordStatusChange($this->newStatus, auth()->id(), $note);
+        $this->selectedOrder->recordStatusChange($this->newStatus, Auth::id(), $note);
 
         /** @var Shipment|null $shipment */
         $shipment = $this->selectedOrder->shipment;
@@ -112,7 +113,7 @@ class OrderManager extends Component
 
     public function sendToBiteship(int $orderId, ?\App\Services\BiteshipService $biteshipService = null): void
     {
-        $order = Order::with(['items.productVariant.product', 'payment', 'shipment'])->find($orderId);
+        $order = Order::query()->with(['items.productVariant.product', 'payment', 'shipment'])->find($orderId, ['*']);
         if (! $order) {
             return;
         }
@@ -136,7 +137,7 @@ class OrderManager extends Component
 
     public function syncBiteshipStatus(int $orderId, ?\App\Services\BiteshipService $biteshipService = null): void
     {
-        $order = Order::with(['items', 'payment', 'shipment'])->find($orderId);
+        $order = Order::query()->with(['items', 'payment', 'shipment'])->find($orderId, ['*']);
         if (! $order || ! $order->shipment?->biteship_order_id) {
             $this->statusMessage = 'Pesanan ini belum memiliki ID Biteship.';
 
@@ -168,9 +169,9 @@ class OrderManager extends Component
             ]);
 
             if ($shipmentStatus === 'delivered' && $order->status !== 'delivered') {
-                $order->recordStatusChange('delivered', auth()->id(), 'Sinkronisasi Biteship: Status DELIVERED');
+                $order->recordStatusChange('delivered', Auth::id(), 'Sinkronisasi Biteship: Status DELIVERED');
             } elseif (in_array($shipmentStatus, ['in_transit']) && in_array($order->status, ['paid', 'processing'])) {
-                $order->recordStatusChange('shipped', auth()->id(), "Sinkronisasi Biteship: Resi {$waybill}");
+                $order->recordStatusChange('shipped', Auth::id(), "Sinkronisasi Biteship: Resi {$waybill}");
             }
 
             $order->refresh();
@@ -187,7 +188,7 @@ class OrderManager extends Component
 
     public function render(): View
     {
-        $query = Order::with(['items', 'payment', 'shipment'])->latest();
+        $query = Order::query()->with(['items', 'payment', 'shipment'])->latest('id');
 
         if ($this->search) {
             $query->where(function ($q) {

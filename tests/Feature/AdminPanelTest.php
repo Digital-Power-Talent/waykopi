@@ -112,7 +112,7 @@ class AdminPanelTest extends TestCase
             'name' => 'Way Kopi Honey Process',
         ]);
 
-        $product = Product::where('slug', 'way-kopi-honey-process')->firstOrFail();
+        $product = Product::query()->where('slug', 'way-kopi-honey-process')->firstOrFail();
 
         $this->assertDatabaseHas('product_variants', [
             'product_id' => $product->id,

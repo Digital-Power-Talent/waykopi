@@ -5,10 +5,15 @@ namespace App\Livewire\Admin;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('components.layouts.admin')]
+#[Title('Manajemen Postingan Blog — Admin Way Kopi')]
 class PostManager extends Component
 {
     use WithPagination;
@@ -110,7 +115,7 @@ class PostManager extends Component
         $count = 1;
 
         // Ensure unique slug
-        while (Post::where('slug', $slug)
+        while (Post::query()->where('slug', $slug)
             ->when($this->editingPostId, fn ($q) => $q->where('id', '!=', $this->editingPostId))
             ->exists()) {
             $slug = "{$baseSlug}-{$count}";
@@ -119,12 +124,12 @@ class PostManager extends Component
 
         $coverUrl = trim($this->coverImageUrl) ?: '/images/lampung_farmer.png';
         /** @var User|null $adminUser */
-        $adminUser = User::where('role', 'admin')->first();
-        $authorId = auth()->id() ?? ($adminUser ? $adminUser->id : 1);
+        $adminUser = User::query()->where('role', 'admin')->first();
+        $authorId = Auth::id() ?? ($adminUser ? $adminUser->id : 1);
 
         if ($this->editingPostId) {
             /** @var Post $post */
-            $post = Post::findOrFail($this->editingPostId);
+            $post = Post::query()->findOrFail($this->editingPostId);
             $post->update([
                 'title' => $this->title,
                 'slug' => $slug,
@@ -139,7 +144,7 @@ class PostManager extends Component
             session()->flash('success', "Postingan '{$post->title}' berhasil diperbarui!");
         } else {
             /** @var Post $post */
-            $post = Post::create([
+            $post = Post::query()->create([
                 'author_id' => $authorId,
                 'title' => $this->title,
                 'slug' => $slug,
@@ -159,17 +164,18 @@ class PostManager extends Component
 
     public function deletePost(int $postId): void
     {
-        /** @var Post $post */
-        $post = Post::findOrFail($postId);
-        $title = $post->title;
-        $post->delete();
-
-        session()->flash('success', "Postingan '{$title}' berhasil dihapus.");
+        /** @var Post|null $post */
+        $post = Post::query()->find($postId, ['*']);
+        if ($post) {
+            $title = $post->title;
+            Post::destroy($postId);
+            session()->flash('success', "Postingan '{$title}' berhasil dihapus.");
+        }
     }
 
     public function render(): View
     {
-        $posts = Post::with('author')
+        $posts = Post::query()->with('author')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('title', 'like', "%{$this->search}%")
@@ -178,13 +184,11 @@ class PostManager extends Component
             })
             ->when($this->categoryFilter, fn ($q) => $q->where('category', $this->categoryFilter))
             ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
-            ->latest()
+            ->latest('id')
             ->paginate(10);
 
         return view('livewire.admin.post-manager', [
             'posts' => $posts,
-        ])->layout('components.layouts.admin', [
-            'title' => 'Manajemen Postingan Blog — Admin Way Kopi',
         ]);
     }
 }
