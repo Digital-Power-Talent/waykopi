@@ -194,12 +194,70 @@
                         @endforeach
                     </div>
 
+                    <!-- Automatic Shipping Subsidy Banner -->
+                    <div class="p-4 bg-[var(--color-bg-surface)] border border-[var(--color-accent-gold)]/30 rounded-[var(--radius-sm)] space-y-2.5 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-[var(--color-accent-gold)] uppercase tracking-wider font-mono flex items-center gap-1.5">
+                                <span>🚚</span>
+                                <span>Subsidi & Promo Ongkir</span>
+                            </span>
+                            <span class="px-2 py-0.5 text-[9px] uppercase font-bold text-amber-300 bg-amber-950/80 border border-amber-600/40 rounded font-mono">
+                                {{ $itemCount }} Bungkus
+                            </span>
+                        </div>
+
+                        @if(!empty($destinationAreaId))
+                            @if($discountInfo['is_free_shipping'])
+                                <div class="p-3 bg-emerald-950/60 border border-emerald-500/50 rounded flex items-start gap-2.5">
+                                    <span class="text-lg leading-none">🎉</span>
+                                    <div>
+                                        <span class="font-bold text-xs text-emerald-400 font-mono block">
+                                            GRATIS ONGKIR OTOMATIS AKTIF
+                                        </span>
+                                        <span class="text-[10px] text-emerald-300/90 block leading-tight mt-0.5">
+                                            {{ $discountInfo['promo_message'] }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @elseif($discountInfo['discount_amount'] > 0)
+                                <div class="p-3 bg-emerald-950/40 border border-emerald-600/40 rounded flex items-start gap-2.5">
+                                    <span class="text-base leading-none">⚡</span>
+                                    <div>
+                                        <span class="font-bold text-xs text-emerald-400 font-mono block">
+                                            {{ $discountInfo['rule_label'] }}
+                                        </span>
+                                        <span class="text-[10px] text-emerald-300/80 block leading-tight mt-0.5">
+                                            {{ $discountInfo['promo_message'] }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="p-2.5 bg-[var(--color-bg-base)] border border-[var(--color-coffee-brown)]/60 rounded text-[11px] font-mono text-[var(--color-text-muted)] space-y-1">
+                                    <div class="flex items-center justify-between text-[var(--color-text-primary)] font-bold text-[10px]">
+                                        <span>Wilayah: {{ $discountInfo['group_label'] }}</span>
+                                        <span class="text-amber-400">{{ $discountInfo['rule_label'] }}</span>
+                                    </div>
+                                    <p class="text-[10px] leading-tight text-amber-200/80">
+                                        💡 {{ $discountInfo['promo_message'] }}
+                                    </p>
+                                </div>
+                            @endif
+                        @else
+                            <div class="p-2.5 bg-[var(--color-bg-base)] border border-[var(--color-coffee-brown)]/60 rounded text-[10px] font-mono text-[var(--color-text-muted)] space-y-1 leading-relaxed">
+                                <span class="text-amber-400 font-bold block">✨ Promo Subsidi Otomatis Tersedia:</span>
+                                <div>• <strong>Jabar, Jabodetabek & Banten:</strong> 1 bks (-5rb), 2 bks (-10rb), ≥3 bks (<strong>Gratis Ongkir</strong>)</div>
+                                <div>• <strong>Jateng, DIY & Jatim:</strong> 2 bks (-5rb), 3 bks (-10rb), ≥4 bks (<strong>Gratis Ongkir</strong>)</div>
+                                <span class="text-[9px] text-[var(--color-text-muted)] block mt-1 italic">*Diskon otomatis terpasang saat area pengiriman dipilih.</span>
+                            </div>
+                        @endif
+                    </div>
+
                     <!-- Voucher Input Section -->
                     <div class="p-4 bg-[var(--color-bg-base)] border border-[var(--color-coffee-brown)] rounded-[var(--radius-sm)] space-y-3">
                         <div class="flex items-center justify-between">
                             <label class="text-xs font-semibold text-[var(--color-text-primary)] uppercase tracking-wider font-mono flex items-center gap-1.5">
                                 <span>🎟️</span>
-                                <span>Voucher Diskon Ongkir</span>
+                                <span>Voucher Diskon Tambahan</span>
                             </label>
                             @if($appliedVoucherCode)
                                 <span class="px-2 py-0.5 text-[9px] uppercase font-bold text-emerald-400 bg-emerald-950 border border-emerald-700/50 rounded">
@@ -215,7 +273,7 @@
                                         ✓ {{ $appliedVoucherCode }}
                                     </span>
                                     <span class="text-[10px] text-emerald-300/80 block">
-                                        Potongan gratis ongkir s.d. Rp 10.000
+                                        Voucher diskon aktif
                                     </span>
                                 </div>
                                 <button type="button" wire:click="removeVoucher" class="px-2 py-1 text-[10px] text-red-400 hover:text-red-300 border border-red-500/30 rounded hover:bg-red-500/10 font-mono transition-colors">
@@ -226,7 +284,7 @@
                             <div class="flex items-center gap-2">
                                 <input type="text" 
                                        wire:model="voucherInput" 
-                                       placeholder="Kode: WAYKOPI100" 
+                                       placeholder="Punya kode voucher? Masukkan di sini..." 
                                        class="w-full px-3 py-2 bg-[var(--color-bg-surface)] border border-[var(--color-coffee-brown)] rounded-[var(--radius-sm)] text-xs text-[var(--color-text-primary)] uppercase font-mono tracking-wider focus:outline-none focus:border-[var(--color-accent-gold)]"
                                        @keydown.enter.prevent="$wire.applyVoucher()">
                                 <button type="button" 
@@ -234,16 +292,6 @@
                                         class="px-4 py-2 bg-[var(--color-accent-gold)] text-[var(--color-bg-base)] font-bold text-xs rounded-[var(--radius-sm)] hover:bg-[var(--color-accent-gold-bright)] transition-colors whitespace-nowrap">
                                     Pakai
                                 </button>
-                            </div>
-
-                            <div class="flex items-center justify-between text-[10px] font-mono">
-                                <button type="button" 
-                                        wire:click="$set('voucherInput', 'WAYKOPI100'); $wire.applyVoucher()" 
-                                        class="text-amber-400/90 hover:text-amber-300 underline flex items-center gap-1">
-                                    <span>⚡ Gunakan kode</span>
-                                    <strong class="font-bold">WAYKOPI100</strong>
-                                </button>
-                                <span class="text-[var(--color-text-muted)]">Maks. 10rb</span>
                             </div>
                         @endif
 
@@ -265,7 +313,7 @@
                     <!-- Cost Breakdown -->
                     <div class="space-y-3 pt-4 border-t border-[var(--color-coffee-brown)] text-sm font-mono">
                         <div class="flex items-center justify-between text-[var(--color-text-muted)]">
-                            <span>Subtotal Kopi</span>
+                            <span>Subtotal Kopi ({{ $itemCount }} bks)</span>
                             <span class="text-[var(--color-text-primary)] font-bold">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
 
@@ -282,7 +330,16 @@
 
                         @if($discountAmount > 0)
                             <div class="flex items-center justify-between text-emerald-400 font-bold">
-                                <span>Diskon Ongkir ({{ $appliedVoucherCode }})</span>
+                                <span>
+                                    @if($discountInfo['is_free_shipping'])
+                                        Potongan Ongkir (Gratis Ongkir)
+                                    @else
+                                        Potongan Subsidi Ongkir
+                                    @endif
+                                    @if($appliedVoucherCode)
+                                        + Voucher
+                                    @endif
+                                </span>
                                 <span>- Rp {{ number_format($discountAmount, 0, ',', '.') }}</span>
                             </div>
                         @endif

@@ -87,10 +87,6 @@
 
             <div class="border-t border-[var(--color-coffee-brown)]/50 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-[var(--color-text-muted)] font-mono gap-4 text-center sm:text-left">
                 <p>&copy; {{ date('Y') }} Way Kopi Lampung (waykopi.com). Direct-to-Consumer Coffee Brand.</p>
-                <div class="flex items-center space-x-4">
-                    <span>💳 Payment by Xendit</span>
-                    <span>🚚 Shipping by Biteship</span>
-                </div>
             </div>
         </div>
     </footer>

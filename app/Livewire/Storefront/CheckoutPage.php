@@ -155,14 +155,9 @@ class CheckoutPage extends Component
             return;
         }
 
-        if ($clean === 'WAYKOPI100') {
-            $this->appliedVoucherCode = 'WAYKOPI100';
-            $this->voucherInput = 'WAYKOPI100';
-            $this->voucherMessage = 'Voucher WAYKOPI100 berhasil digunakan! Diskon ongkir s.d. Rp 10.000.';
-        } else {
-            $this->appliedVoucherCode = '';
-            $this->voucherError = "Kode voucher '{$this->voucherInput}' tidak valid.";
-        }
+        // Voucher verification
+        $this->appliedVoucherCode = '';
+        $this->voucherError = "Kode voucher '{$this->voucherInput}' tidak ditemukan atau sudah tidak berlaku.";
     }
 
     public function removeVoucher(): void
@@ -180,10 +175,14 @@ class CheckoutPage extends Component
             : 0.0;
     }
 
-    public function processCheckout(?OrderService $orderService = null, ?CartService $cartService = null): void
-    {
+    public function processCheckout(
+        ?OrderService $orderService = null,
+        ?CartService $cartService = null,
+        ?\App\Services\ShippingDiscountService $shippingDiscountService = null
+    ): void {
         $orderService = $orderService ?? app(OrderService::class);
         $cartService = $cartService ?? app(CartService::class);
+        $shippingDiscountService = $shippingDiscountService ?? app(\App\Services\ShippingDiscountService::class);
 
         $this->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -208,7 +207,10 @@ class CheckoutPage extends Component
 
         $selectedRate = $this->shippingRates[$this->selectedCourierIndex];
         $shippingFee = (float) $selectedRate['price'];
-        $discountAmount = ($this->appliedVoucherCode === 'WAYKOPI100') ? min($shippingFee, 10000.0) : 0.0;
+        $itemCount = $cartService->getItemCount();
+
+        $discountInfo = $shippingDiscountService->calculateDiscount($itemCount, $shippingFee, $this->areaName);
+        $discountAmount = (float) $discountInfo['discount_amount'];
 
         try {
             $order = $orderService->createOrder([
@@ -238,21 +240,30 @@ class CheckoutPage extends Component
         }
     }
 
-    public function render(CartService $cartService): View
+    public function render(CartService $cartService, \App\Services\ShippingDiscountService $shippingDiscountService): View
     {
         $cartItems = $cartService->getItems();
         $subtotal = $cartService->getSubtotal();
         $totalWeight = $cartService->getTotalWeightGrams();
+        $itemCount = $cartService->getItemCount();
 
         $selectedShippingFee = $this->getSelectedShippingFee();
-        $discountAmount = ($this->appliedVoucherCode === 'WAYKOPI100') ? min($selectedShippingFee, 10000.0) : 0.0;
+        $discountInfo = $shippingDiscountService->calculateDiscount(
+            $itemCount,
+            $selectedShippingFee,
+            $this->areaName
+        );
+
+        $discountAmount = (float) $discountInfo['discount_amount'];
         $grandTotal = max(0.0, $subtotal + $selectedShippingFee - $discountAmount);
 
         return view('livewire.storefront.checkout-page', [
             'cartItems' => $cartItems,
             'subtotal' => $subtotal,
             'totalWeight' => $totalWeight,
+            'itemCount' => $itemCount,
             'selectedShippingFee' => $selectedShippingFee,
+            'discountInfo' => $discountInfo,
             'discountAmount' => $discountAmount,
             'grandTotal' => $grandTotal,
         ]);

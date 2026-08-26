@@ -118,6 +118,7 @@ class ProductManager extends Component
             'roast_profile' => ['required', 'string', 'max:100'],
             'origin' => ['required', 'string', 'max:100'],
             'imageUrl' => ['required', 'string', 'max:500'],
+            'grind_type' => ['required', 'string', 'in:whole_bean,fine,medium,coarse'],
             'weight_grams' => ['required', 'integer', 'min:50'],
             'price' => ['required', 'numeric', 'min:1000'],
             'stock' => ['required', 'integer', 'min:0'],

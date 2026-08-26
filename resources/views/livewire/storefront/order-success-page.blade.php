@@ -53,7 +53,7 @@
                 </div>
                 @if($order->discount_amount > 0)
                     <div class="flex items-center justify-between text-emerald-400 font-bold">
-                        <span>Diskon Ongkir ({{ $order->voucher_code ?: 'Voucher' }})</span>
+                        <span>Potongan / Subsidi Ongkir{{ $order->voucher_code ? " ({$order->voucher_code})" : '' }}</span>
                         <span>- Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</span>
                     </div>
                 @endif

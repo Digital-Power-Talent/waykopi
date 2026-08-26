@@ -33,7 +33,7 @@
                         <div>
                             Subtotal + Ongkir: Rp {{ number_format($order->subtotal + $order->shipping_cost, 0, ',', '.') }}
                             @if($order->discount_amount > 0)
-                                <span class="text-emerald-400 font-bold"> - Diskon ({{ $order->voucher_code ?: 'Voucher' }}): Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</span>
+                                <span class="text-emerald-400 font-bold"> - Subsidi Ongkir{{ $order->voucher_code ? " ({$order->voucher_code})" : '' }}: Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</span>
                             @endif
                             + <span class="text-amber-400 font-bold">Kode Unik: Rp {{ number_format($order->unique_code, 0, ',', '.') }}</span>
                         </div>

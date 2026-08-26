@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Livewire\Admin\ProductManager;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -72,16 +73,33 @@ class AdminProductManagerCRUDTest extends TestCase
             'is_active' => true,
         ]);
 
+        ProductVariant::create([
+            'product_id' => $product->id,
+            'sku' => 'WK-KOPI-LAMA-200',
+            'grind_type' => 'whole_bean',
+            'weight_grams' => 200,
+            'price' => 45000.00,
+            'stock' => 20,
+            'is_active' => true,
+        ]);
+
         Livewire::actingAs($admin)
             ->test(ProductManager::class)
             ->call('openProductModal', $product->id)
+            ->assertSet('grind_type', 'whole_bean')
             ->set('name', 'Kopi Baru Diperbarui')
+            ->set('grind_type', 'fine')
             ->call('saveProduct')
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
             'name' => 'Kopi Baru Diperbarui',
+        ]);
+
+        $this->assertDatabaseHas('product_variants', [
+            'product_id' => $product->id,
+            'grind_type' => 'fine',
         ]);
     }
 

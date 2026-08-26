@@ -23,11 +23,6 @@
     @livewireStyles
 </head>
 <body class="bg-[var(--color-bg-base)] text-[var(--color-text-primary)] font-body antialiased flex flex-col min-h-full selection:bg-[var(--color-accent-gold)] selection:text-black">
-    <!-- Top Announcement Bar (Death Wish Style Red Bar) -->
-    <div class="bg-[#e31818] text-white font-sans text-center py-1.5 px-4 text-[11px] font-bold uppercase tracking-widest z-50 border-b border-red-700">
-        <span>FREE SHIPPING WITH CODE: <strong class="underline decoration-white">WAYKOPI100</strong></span>
-    </div>
-
     <!-- Header Navigation Bar (Modular Responsive Header Component) -->
     <x-storefront-header />
 
@@ -87,10 +82,6 @@
 
             <div class="border-t border-[var(--color-coffee-brown)]/50 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-[var(--color-text-muted)] font-mono gap-4">
                 <p>&copy; {{ date('Y') }} Way Kopi Lampung (waykopi.com). Direct-to-Consumer Coffee Brand.</p>
-                <div class="flex space-x-4">
-                    <span>💳 Payment by Xendit</span>
-                    <span>🚚 Shipping by Biteship</span>
-                </div>
             </div>
         </div>
     </footer>

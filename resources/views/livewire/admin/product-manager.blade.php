@@ -141,20 +141,35 @@
                     </div>
 
                     <!-- Main Variant Config -->
-                    <div class="pt-3 border-t border-[var(--color-coffee-brown)]/40 space-y-2">
+                    <div class="pt-3 border-t border-[var(--color-coffee-brown)]/40 space-y-3">
                         <span class="block font-bold text-[var(--color-accent-gold)]">Konfigurasi Varian Kopi Utama:</span>
+                        
+                        <div>
+                            <label class="block text-[var(--color-text-muted)] uppercase mb-1 text-[10px]">Pilih Bentuk Kopi</label>
+                            <select wire:model="grind_type" class="w-full px-3 py-2 bg-[var(--color-bg-base)] border border-[var(--color-coffee-brown)] text-[var(--color-text-primary)] rounded focus:outline-none focus:border-[var(--color-accent-gold)]">
+                                <option value="whole_bean">Biji Utuh (Whole Bean)</option>
+                                <option value="fine">Bubuk Halus (Fine)</option>
+                                <option value="medium">Bubuk Sedang (Medium)</option>
+                                <option value="coarse">Bubuk Kasar (Coarse)</option>
+                            </select>
+                            @error('grind_type') <span class="text-red-400 text-[10px]">{{ $message }}</span> @enderror
+                        </div>
+
                         <div class="grid grid-cols-3 gap-2">
                             <div>
-                                <label class="block text-[var(--color-text-muted)] text-[10px]">Berat (gram)</label>
-                                <input type="number" wire:model="weight_grams" class="w-full px-2 py-1.5 bg-[var(--color-bg-base)] border border-[var(--color-coffee-brown)] text-[var(--color-text-primary)] rounded">
+                                <label class="block text-[var(--color-text-muted)] text-[10px] uppercase">Berat (gram)</label>
+                                <input type="number" wire:model="weight_grams" class="w-full px-2 py-1.5 bg-[var(--color-bg-base)] border border-[var(--color-coffee-brown)] text-[var(--color-text-primary)] rounded focus:outline-none focus:border-[var(--color-accent-gold)]">
+                                @error('weight_grams') <span class="text-red-400 text-[10px]">{{ $message }}</span> @enderror
                             </div>
                             <div>
-                                <label class="block text-[var(--color-text-muted)] text-[10px]">Harga (Rp)</label>
-                                <input type="number" wire:model="price" class="w-full px-2 py-1.5 bg-[var(--color-bg-base)] border border-[var(--color-coffee-brown)] text-[var(--color-text-primary)] rounded">
+                                <label class="block text-[var(--color-text-muted)] text-[10px] uppercase">Harga (Rp)</label>
+                                <input type="number" wire:model="price" class="w-full px-2 py-1.5 bg-[var(--color-bg-base)] border border-[var(--color-coffee-brown)] text-[var(--color-text-primary)] rounded focus:outline-none focus:border-[var(--color-accent-gold)]">
+                                @error('price') <span class="text-red-400 text-[10px]">{{ $message }}</span> @enderror
                             </div>
                             <div>
-                                <label class="block text-[var(--color-text-muted)] text-[10px]">Stok (pcs)</label>
-                                <input type="number" wire:model="stock" class="w-full px-2 py-1.5 bg-[var(--color-bg-base)] border border-[var(--color-coffee-brown)] text-[var(--color-text-primary)] rounded">
+                                <label class="block text-[var(--color-text-muted)] text-[10px] uppercase">Stok (pcs)</label>
+                                <input type="number" wire:model="stock" class="w-full px-2 py-1.5 bg-[var(--color-bg-base)] border border-[var(--color-coffee-brown)] text-[var(--color-text-primary)] rounded focus:outline-none focus:border-[var(--color-accent-gold)]">
+                                @error('stock') <span class="text-red-400 text-[10px]">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     </div>
