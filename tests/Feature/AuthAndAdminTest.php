@@ -24,6 +24,7 @@ class AuthAndAdminTest extends TestCase
 
     public function test_customer_tidak_dapat_mengakses_admin_panel_dan_ter_redirect(): void
     {
+        /** @var User $customer */
         $customer = User::factory()->create(['role' => 'customer']);
 
         $response = $this->actingAs($customer)->get('/admin');
@@ -34,6 +35,7 @@ class AuthAndAdminTest extends TestCase
 
     public function test_admin_dapat_mengakses_admin_panel(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         $response = $this->actingAs($admin)->get('/admin');

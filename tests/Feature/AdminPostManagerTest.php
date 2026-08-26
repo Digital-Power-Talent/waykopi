@@ -21,6 +21,7 @@ class AdminPostManagerTest extends TestCase
 
     public function test_non_admin_user_cannot_access_admin_post_manager(): void
     {
+        /** @var User $user */
         $user = User::factory()->create(['role' => 'customer']);
 
         $response = $this->actingAs($user)->get(route('admin.posts.index'));
@@ -29,6 +30,7 @@ class AdminPostManagerTest extends TestCase
 
     public function test_admin_can_view_post_manager_page(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         Post::create([
@@ -50,6 +52,7 @@ class AdminPostManagerTest extends TestCase
 
     public function test_admin_can_create_new_post(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         Livewire::actingAs($admin)
@@ -73,6 +76,7 @@ class AdminPostManagerTest extends TestCase
 
     public function test_admin_can_edit_existing_post(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         $post = Post::create([
@@ -102,6 +106,7 @@ class AdminPostManagerTest extends TestCase
 
     public function test_admin_can_delete_post(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         $post = Post::create([

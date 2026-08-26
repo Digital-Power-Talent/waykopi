@@ -33,6 +33,7 @@ class CustomerAuthAndDashboardTest extends TestCase
 
     public function test_pelanggan_dapat_logout(): void
     {
+        /** @var User $user */
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->post('/logout');
@@ -49,6 +50,7 @@ class CustomerAuthAndDashboardTest extends TestCase
 
     public function test_halaman_akun_menampilkan_riwayat_pesanan_pelanggan(): void
     {
+        /** @var User $user */
         $user = User::factory()->create(['name' => 'Rahmat Hidayat', 'email' => 'rahmat@example.com']);
 
         $order = Order::create([
@@ -77,6 +79,7 @@ class CustomerAuthAndDashboardTest extends TestCase
 
     public function test_pelanggan_dapat_melihat_pesanan_guest_yang_menggunakan_email_sama(): void
     {
+        /** @var User $user */
         $user = User::factory()->create(['name' => 'Budi Santoso', 'email' => 'budi@example.com']);
 
         $guestOrder = Order::create([
@@ -104,6 +107,7 @@ class CustomerAuthAndDashboardTest extends TestCase
 
     public function test_pelanggan_dapat_menambahkan_alamat_pengiriman_baru(): void
     {
+        /** @var User $user */
         $user = User::factory()->create();
 
         Livewire::actingAs($user)

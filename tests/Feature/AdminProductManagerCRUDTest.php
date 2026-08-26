@@ -15,6 +15,7 @@ class AdminProductManagerCRUDTest extends TestCase
 
     public function test_admin_can_view_product_manager_page(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         $product = Product::create([
@@ -34,6 +35,7 @@ class AdminProductManagerCRUDTest extends TestCase
 
     public function test_admin_can_create_new_product(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         Livewire::actingAs($admin)
@@ -58,6 +60,7 @@ class AdminProductManagerCRUDTest extends TestCase
 
     public function test_admin_can_edit_product(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         $product = Product::create([
@@ -84,6 +87,7 @@ class AdminProductManagerCRUDTest extends TestCase
 
     public function test_admin_can_delete_product(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         $product = Product::create([

@@ -22,12 +22,14 @@ class AdminPanelTest extends TestCase
         $this->get('/admin')->assertRedirect('/login');
 
         // Normal customer redirect to login
+        /** @var User $customer */
         $customer = User::factory()->create(['role' => 'customer']);
         $this->actingAs($customer)->get('/admin')->assertRedirect('/login');
     }
 
     public function test_admin_dapat_mengakses_dashboard(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         $response = $this->actingAs($admin)->get('/admin');
@@ -37,6 +39,7 @@ class AdminPanelTest extends TestCase
 
     public function test_admin_dapat_mengubah_status_pesanan_dan_nomor_resi(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         $order = Order::create([
@@ -91,6 +94,7 @@ class AdminPanelTest extends TestCase
 
     public function test_admin_dapat_menambahkan_produk_dan_varian_kopi_baru(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->admin()->create();
 
         Livewire::actingAs($admin)
