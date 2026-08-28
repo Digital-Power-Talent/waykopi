@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '6281234567890',
         ]);
 
-        // 1 Produk "Way Kopi Robusta" dengan 1 varian (giling medium, 200g)
+        // Produk 1: Way Kopi Fine Robusta
         $product = Product::create([
             'slug' => 'way-kopi-robusta',
             'name' => 'Way Kopi Fine Robusta',
@@ -50,7 +50,7 @@ class DatabaseSeeder extends Seeder
             'sort_order' => 1,
         ]);
 
-        // Additional product variants / products
+        // Produk 2: Way Kopi Dark Roast Robusta (Gambar disamakan agar serasi)
         $productDark = Product::create([
             'slug' => 'way-kopi-dark-roast',
             'name' => 'Way Kopi Dark Roast Robusta',
@@ -73,22 +73,26 @@ class DatabaseSeeder extends Seeder
 
         ProductImage::create([
             'product_id' => $productDark->id,
-            'url' => '/images/coffee_beans.png',
-            'alt_text' => 'Biji Kopi Robusta Dark Roast Lampung',
+            'url' => '/images/products/produk-utama.jpg',
+            'alt_text' => 'Kemasan Way Kopi Dark Roast Robusta',
             'sort_order' => 1,
         ]);
 
         // Dummy customer & orders
-        $orders = Order::factory()->count(10)->create();
-        foreach ($orders as $order) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_variant_id' => $variant200->id,
-                'product_name' => $product->name,
-                'variant_label' => 'Biji Utuh, 200g',
-                'price_at_purchase' => $variant200->price,
-                'quantity' => 2,
-            ]);
+        try {
+            $orders = Order::factory()->count(10)->create();
+            foreach ($orders as $order) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_variant_id' => $variant200->id,
+                    'product_name' => $product->name,
+                    'variant_label' => 'Biji Utuh, 200g',
+                    'price_at_purchase' => $variant200->price,
+                    'quantity' => 2,
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Lewati jika factory order tidak tersedia
         }
 
         // Authentic Blog Posts (Cerita Petani & Edukasi)
@@ -109,7 +113,7 @@ class DatabaseSeeder extends Seeder
             'title' => 'Rahasia Profil Sangrai Medium Dark Way Kopi yang Gurih dan Harum',
             'slug' => 'rahasia-profil-sangrai-medium-dark-way-kopi',
             'excerpt' => 'Mengapa tingkat sangrai Medium Dark sangat cocok untuk kopi Robusta Lampung? Temukan keseimbangan rasa cokelat hitam, karamel, dan aroma manis rempah.',
-            'content' => "Memanggang biji kopi Robusta adalah gabungan antara seni dan sains. Robusta memiliki tingkat kerapatan biji yang lebih padat dibanding Arabika, sehingga memerlukan penyesuaian suhu (roasting curve) yang sangat presisi.\n\nDi roastery Way Kopi, kami memilih profil sangrai Medium Dark. Profil ini berhasil memunculkan rasa gurih manis seperti cokelat hitam (dark chocolate) dan karamel tanpa menghasilkan rasa gosong atau pahit yang menyengat.\n\nSaat diseduh, aromanya merebak manis dan meninggalkan *aftertaste* gurih yang bertahan lama di tenggorokan.",
+            'content' => "Memanggang biji kopi Robusta adalah gabungan antara seni dan sains. Robusta memiliki tingkat kerapatan biji yang lebih padat dibanding Arabika, sehingga memerlukan penyesuaian suhu (roasting curve) yang sangat presisi.\n\nDi roastery Way Kopi, kami memilih profil sangrai Medium Dark. Profil ini berhasil memunculkan rasa gurih manis seperti cokelat hitam (dark chocolate) dan karamel tanpa menghasilkan rasa gosong atau pahit yang menyengat.\n\nSaat diseduh, aromanya merebak manis dan meninggalkan aftertaste gurih yang bertahan lama di tenggorokan.",
             'cover_image_url' => '/images/coffee_roaster.png',
             'category' => 'Profil Sangrai',
             'status' => 'published',
