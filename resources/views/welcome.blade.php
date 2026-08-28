@@ -1,82 +1,252 @@
 <x-layouts.storefront title="Way Kopi — Kopi Robusta Lampung Langsung dari Kebun Petani">
-    <!-- Full Width Main Website Banner (Edge-to-Edge 100% Width) -->
-    <section class="relative w-full overflow-hidden bg-[#0d0b09] border-b border-[var(--color-coffee-brown)]/80 shadow-2xl group">
-        <div class="w-full overflow-hidden">
-            <img src="/images/banner_waykopi.png" alt="Way Kopi Robusta Lampung — Dari Lampung, Untuk Indonesia" class="w-full h-auto object-cover block transition-transform duration-700 group-hover:scale-[1.005]">
+    
+    <!-- 1. HERO BANNER UTAMA -->
+    <section class="relative w-full bg-surface border-b border-custom overflow-hidden group transition-colors duration-300">
+        <div class="relative w-full h-[260px] sm:h-[380px] overflow-hidden">
+            <img src="/images/banner_waykopi.png" alt="Way Kopi Robusta Lampung" class="w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         </div>
         
-        <!-- Floating Quick Action CTA Button -->
-        <div class="absolute bottom-4 right-4 sm:bottom-8 sm:right-10 z-10 flex items-center gap-3">
-            <a href="{{ route('products.index') }}" class="px-5 py-2.5 sm:px-7 sm:py-3.5 text-xs sm:text-sm font-bold font-mono bg-[var(--color-accent-gold)] text-[var(--color-bg-base)] rounded-[var(--radius-sm)] hover:bg-[var(--color-accent-gold-bright)] transition-all shadow-2xl uppercase tracking-wider flex items-center gap-2 border border-[var(--color-accent-gold)]">
-                <span>Belanja Sekarang</span>
+        <!-- Floating Quick Action CTA -->
+        <div class="absolute bottom-4 right-4 sm:bottom-6 sm:right-8 z-20">
+            <a href="{{ route('products.index') }}" class="px-5 py-2.5 sm:px-6 sm:py-3 text-xs font-bold font-mono bg-[var(--color-accent-gold)] text-black rounded-[var(--radius-sm)] hover:bg-[var(--color-accent-gold-bright)] transition-all shadow-xl uppercase tracking-widest flex items-center gap-2 border border-[var(--color-accent-gold)]">
+                <span>Belanja Koleksi Kopi</span>
                 <span>&rarr;</span>
             </a>
         </div>
     </section>
 
-    <!-- Centered Container for Catalogue & Lower Sections -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 w-full pt-10 pb-16 space-y-16">
-        <!-- Product Catalog Section Component -->
-        @livewire('storefront.product-catalog', ['showHero' => false])
+    <!-- 2. TRUST BADGES BAR -->
+    <section class="bg-surface border-b border-custom py-3 px-4 sm:px-8 shadow-inner transition-colors duration-300">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-center font-mono text-xs uppercase tracking-wider text-main">
+            <div class="flex items-center justify-center space-x-2 py-1 border-r border-custom last:border-none">
+                <span class="text-[var(--color-accent-gold)] font-bold text-sm">✓</span>
+                <span>100% Fine Robusta Lampung</span>
+            </div>
+            <div class="flex items-center justify-center space-x-2 py-1 border-r border-custom last:border-none">
+                <span class="text-[var(--color-accent-gold)] font-bold text-sm">🌱</span>
+                <span>Direct Trade dari Petani</span>
+            </div>
+            <div class="flex items-center justify-center space-x-2 py-1 border-r border-custom last:border-none">
+                <span class="text-[var(--color-accent-gold)] font-bold text-sm">🔥</span>
+                <span>Freshly Artisan Roasted</span>
+            </div>
+            <div class="flex items-center justify-center space-x-2 py-1">
+                <span class="text-[var(--color-accent-gold)] font-bold text-sm">🛡️</span>
+                <span>Garansi Kualitas Terjamin</span>
+            </div>
+        </div>
+    </section>
 
-        <!-- Why Way Kopi Section -->
-        <section class="py-6 border-t border-[var(--color-coffee-brown)]/40">
-            <div class="text-center max-w-2xl mx-auto mb-10 space-y-2">
-                <span class="text-xs font-mono uppercase font-bold text-[var(--color-accent-gold)]">Keunggulan Kopi Robusta Lampung</span>
-                <h2 class="font-display text-3xl font-bold text-[var(--color-text-primary)]">
-                    Mengapa Memilih Way Kopi?
+    <!-- 3. KONTEN UTAMA -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 w-full pt-12 pb-16 space-y-16">
+        
+        <!-- Katalog Produk Kopi -->
+        <div>
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between border-b border-custom pb-4 transition-colors duration-300">
+                <div>
+                    <span class="text-xs font-mono uppercase tracking-widest text-[var(--color-accent-gold)] font-bold block mb-1">Pilihan Terbaik Roastery</span>
+                    <h2 class="font-display text-2xl sm:text-4xl font-bold text-main">Katalog Kopi Robusta</h2>
+                </div>
+                <a href="{{ route('products.index') }}" class="mt-3 sm:mt-0 font-mono text-xs uppercase tracking-wider text-[var(--color-accent-gold)] hover:underline font-bold flex items-center space-x-1">
+                    <span>Lihat Semua Katalog</span>
+                    <span>&rarr;</span>
+                </a>
+            </div>
+
+            @livewire('storefront.product-catalog', ['showHero' => false])
+        </div>
+
+        <!-- 4. SECTION: MENGAPA MEMILIH WAY KOPI -->
+        <section class="py-8 border-t border-b border-custom my-10 transition-colors duration-300">
+            <div class="text-center max-w-2xl mx-auto mb-12 space-y-3">
+                <span class="text-xs font-mono uppercase tracking-widest font-bold text-[var(--color-accent-gold)] bg-surface px-4 py-1.5 rounded-full border border-custom inline-block shadow-sm">
+                    Standar Kualitas Tertinggi
+                </span>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-main">
+                    Mengapa Way Kopi Begitu Istimewa?
                 </h2>
+                <p class="text-xs sm:text-sm text-muted font-mono leading-relaxed">
+                    Didedikasikan untuk mengangkat derajat biji kopi Robusta Tanggamus langsung ke cangkir seduhan Anda dengan standar kurasi tanpa kompromi.
+                </p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                <div class="bg-[var(--color-bg-surface)] p-8 rounded-[var(--radius-md)] border border-[var(--color-coffee-brown)] hover:border-[var(--color-accent-gold)] transition-all group shadow-xl">
-                    <div class="w-full h-44 mb-6 rounded-[var(--radius-sm)] overflow-hidden border border-[var(--color-coffee-brown)] relative">
-                        <img src="/images/lampung_farmer.png" alt="Petani Kopi Tanggamus Lampung" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <!-- Card 1 -->
+                <div class="bg-surface p-6 sm:p-8 rounded-[var(--radius-md)] border border-custom hover:border-[var(--color-accent-gold)] transition-all duration-300 group shadow-sm hover:-translate-y-1">
+                    <div class="w-full h-40 sm:h-44 mb-6 rounded-[var(--radius-sm)] overflow-hidden border border-custom relative shadow-inner">
+                        <img src="/images/lampung_farmer.png" alt="Petani Kopi Tanggamus" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute top-3 left-3 bg-surface/90 px-3 py-1 rounded text-[10px] font-mono font-bold text-[var(--color-accent-gold)] uppercase tracking-wider border border-custom">
+                            Petik Merah
+                        </div>
                     </div>
-                    <h3 class="font-display font-bold text-lg text-[var(--color-text-primary)] mb-2">100% Petik Merah</h3>
-                    <p class="text-xs font-mono text-[var(--color-text-muted)] leading-relaxed">
-                        Hanya biji kopi matang sempurna dari Tanggamus yang dipetik manual oleh petani lokal untuk menjamin manis alami & crema tebal.
+                    <h3 class="font-display font-bold text-xl text-main mb-2">100% Seleksi Petik Merah</h3>
+                    <p class="text-xs font-mono text-muted leading-relaxed">
+                        Hanya buah kopi matang sempurna dari lereng Gunung Tanggamus yang dipetik manual untuk menjamin manis alami & crema tebal yang pekat.
                     </p>
                 </div>
 
-                <div class="bg-[var(--color-bg-surface)] p-8 rounded-[var(--radius-md)] border border-[var(--color-coffee-brown)] hover:border-[var(--color-accent-gold)] transition-all group shadow-xl">
-                    <div class="w-full h-44 mb-6 rounded-[var(--radius-sm)] overflow-hidden border border-[var(--color-coffee-brown)] relative">
-                        <img src="/images/coffee_beans.png" alt="Biji Kopi Robusta Sangrai" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <!-- Card 2 -->
+                <div class="bg-surface p-6 sm:p-8 rounded-[var(--radius-md)] border border-custom hover:border-[var(--color-accent-gold)] transition-all duration-300 group shadow-sm hover:-translate-y-1">
+                    <div class="w-full h-40 sm:h-44 mb-6 rounded-[var(--radius-sm)] overflow-hidden border border-custom relative shadow-inner">
+                        <img src="/images/products/produk-utama.jpg" alt="Perdagangan Etis" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute top-3 left-3 bg-surface/90 px-3 py-1 rounded text-[10px] font-mono font-bold text-[var(--color-accent-gold)] uppercase tracking-wider border border-custom">
+                            Fair Trade
+                        </div>
                     </div>
-                    <h3 class="font-display font-bold text-lg text-[var(--color-text-primary)] mb-2">Perdagangan Etis & Fair Trade</h3>
-                    <p class="text-xs font-mono text-[var(--color-text-muted)] leading-relaxed">
-                        Kami membeli hasil panen langsung dari kelompok tani mitra di Lampung dengan harga yang adil dan transparan.
+                    <h3 class="font-display font-bold text-xl text-main mb-2">Perdagangan Etis & Transparan</h3>
+                    <p class="text-xs font-mono text-muted leading-relaxed">
+                        Kami membeli hasil panen langsung dari kelompok tani mitra di Lampung dengan harga yang adil guna meningkatkan kesejahteraan petani lokal.
                     </p>
                 </div>
 
-                <div class="bg-[var(--color-bg-surface)] p-8 rounded-[var(--radius-md)] border border-[var(--color-coffee-brown)] hover:border-[var(--color-accent-gold)] transition-all group shadow-xl">
-                    <div class="w-full h-44 mb-6 rounded-[var(--radius-sm)] overflow-hidden border border-[var(--color-coffee-brown)] relative">
-                        <img src="/images/coffee_roaster.png" alt="Mesin Sangrai Kopi Way Kopi" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <!-- Card 3 -->
+                <div class="bg-surface p-6 sm:p-8 rounded-[var(--radius-md)] border border-custom hover:border-[var(--color-accent-gold)] transition-all duration-300 group shadow-sm hover:-translate-y-1">
+                    <div class="w-full h-40 sm:h-44 mb-6 rounded-[var(--radius-sm)] overflow-hidden border border-custom relative shadow-inner">
+                        <img src="/images/coffee_roaster.png" alt="Artisan Roasting" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute top-3 left-3 bg-surface/90 px-3 py-1 rounded text-[10px] font-mono font-bold text-[var(--color-accent-gold)] uppercase tracking-wider border border-custom">
+                            Artisan Roasting
+                        </div>
                     </div>
-                    <h3 class="font-display font-bold text-lg text-[var(--color-text-primary)] mb-2">Freshly Artisan Roasted</h3>
-                    <p class="text-xs font-mono text-[var(--color-text-muted)] leading-relaxed">
-                        Kopi disangrai secara berkala dalam batch kecil presisi tinggi untuk menjaga aroma segar khas Robusta sampai di meja kamu.
+                    <h3 class="font-display font-bold text-xl text-main mb-2">Freshly Artisan Roasted</h3>
+                    <p class="text-xs font-mono text-muted leading-relaxed">
+                        Kopi disangrai secara berkala dalam batch kecil dengan presisi tinggi untuk menjaga kesegaran dan cita rasa autentik khas Robusta.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- Testimonial Section (What People Are Saying - Death Wish Style) -->
-        <section class="py-10 bg-[var(--color-bg-surface)] border border-[var(--color-coffee-brown)] rounded-[var(--radius-lg)] p-8 md:p-12 text-center space-y-6 shadow-2xl relative overflow-hidden">
-            <div class="absolute inset-0 z-0 opacity-10 mix-blend-luminosity">
+        <!-- 5. TESTIMONIAL SECTION -->
+        <section class="py-10 bg-surface border border-custom rounded-[var(--radius-lg)] p-8 sm:p-12 text-center space-y-6 shadow-sm relative overflow-hidden transition-colors duration-300">
+            <div class="absolute inset-0 z-0 opacity-10 mix-blend-luminosity pointer-events-none">
                 <img src="/images/hero_coffee_cup.png" alt="Crema Coffee Cup" class="w-full h-full object-cover">
             </div>
-            <div class="relative z-10 space-y-6">
-                <span class="text-xs font-mono uppercase font-bold text-[var(--color-accent-gold)] tracking-widest">
-                    WHAT PEOPLE ARE SAYING
+            <div class="relative z-10 space-y-6 max-w-3xl mx-auto">
+                <div class="inline-flex items-center space-x-1 text-[var(--color-accent-gold)] text-lg">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                </div>
+                <span class="text-xs font-mono uppercase font-bold text-[var(--color-accent-gold)] tracking-widest block">
+                    Ulasan Pelanggan Setia
                 </span>
-                <blockquote class="font-display font-bold text-2xl md:text-4xl text-[var(--color-text-primary)] max-w-4xl mx-auto leading-tight">
+                <blockquote class="font-display font-bold text-xl sm:text-3xl text-main leading-snug italic">
                     "Kopi Robusta terbaik yang pernah saya seduh! Mantap, tidak asam, aromanya gurih karamel dan crema-nya tebal banget."
                 </blockquote>
-                <p class="text-xs font-mono text-[var(--color-text-muted)] uppercase tracking-wider">
-                    — Hendra K., Penikmat Kopi Espresso Bogor ⭐⭐⭐⭐⭐
-                </p>
+                <div class="pt-2">
+                    <p class="text-xs font-mono font-bold text-main uppercase tracking-wider">
+                        Hendra Kurniawan
+                    </p>
+                    <p class="text-[11px] font-mono text-muted mt-0.5">
+                        Penikmat & Praktisi Espresso — Bogor
+                    </p>
+                </div>
             </div>
         </section>
+
     </div>
+
+    <!-- ========================================== -->
+    <!-- MANUAL: TOMBOL TEMA & WHATSAPP MELAYANG -->
+    <!-- ========================================== -->
+
+    <!-- TOMBOL GANTI TEMA (KIRI BAWAH) -->
+    <button onclick="toggleDarkMode()" 
+            class="fixed bottom-6 left-6 z-50 p-3.5 rounded-full bg-surface border border-custom text-[var(--color-accent-gold)] shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center group cursor-pointer"
+            title="Ubah Mode Gelap / Terang">
+        <span id="mode-icon" class="text-base">🌙</span>
+        <span class="absolute left-full ml-3 px-3 py-1.5 bg-surface text-main text-xs font-mono rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-custom uppercase tracking-wider pointer-events-none">
+            Ubah Tema
+        </span>
+    </button>
+
+    <!-- TOMBOL WHATSAPP (KANAN BAWAH) -->
+    <a href="https://wa.me/6281234567890?text=Halo%20Way%20Kopi,%20saya%20tertarik%20untuk%20memesan%20kopi." 
+       target="_blank" 
+       class="fixed bottom-6 right-6 z-50 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 group cursor-pointer"
+       title="Chat WhatsApp CS Way Kopi">
+        <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+        </svg>
+        <span class="absolute right-full mr-3 px-3 py-1.5 bg-surface text-main text-xs font-mono rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-custom uppercase tracking-wider pointer-events-none">
+            Chat WhatsApp CS
+        </span>
+    </a>
+
+    <!-- SISTEM PENGATUR WARNA DINAMIS (CSS VARIABLES) -->
+    <style>
+        :root {
+            --bg-base: #120F0D;
+            --bg-surface: #18120F;
+            --text-main: #EADBC8;
+            --text-muted: #A69C8D;
+            --border-custom: #3A2E28;
+        }
+
+        body.light-mode {
+            --bg-base: #F9F6F0;
+            --bg-surface: #FFFFFF;
+            --text-main: #2C221E;
+            --text-muted: #6B5B53;
+            --border-custom: #E2D4CC;
+        }
+
+        body {
+            background-color: var(--bg-base) !important;
+            color: var(--text-main) !important;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .bg-surface {
+            background-color: var(--bg-surface) !important;
+        }
+
+        .border-custom {
+            border-color: var(--border-custom) !important;
+        }
+
+        .text-main {
+            color: var(--text-main) !important;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+    </style>
+
+    <!-- SCRIPT GANTI TEMA SINKRON & AMAN -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('waykopi_theme');
+            const icons = [document.getElementById('global-mode-icon'), document.getElementById('mode-icon')];
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.documentElement.classList.remove('dark');
+                icons.forEach(icon => { if (icon) icon.innerText = '☀️'; });
+            } else {
+                document.body.classList.remove('light-mode');
+                document.documentElement.classList.add('dark');
+                icons.forEach(icon => { if (icon) icon.innerText = '🌙'; });
+            }
+        })();
+
+        function toggleGlobalTheme() {
+            toggleDarkMode();
+        }
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const icons = [document.getElementById('global-mode-icon'), document.getElementById('mode-icon')];
+            
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('waykopi_theme', 'dark');
+                icons.forEach(icon => { if (icon) icon.innerText = '🌙'; });
+            } else {
+                body.classList.add('light-mode');
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('waykopi_theme', 'light');
+                icons.forEach(icon => { if (icon) icon.innerText = '☀️'; });
+            }
+        }
+    </script>
 </x-layouts.storefront>
