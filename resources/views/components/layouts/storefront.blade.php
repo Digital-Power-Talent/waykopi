@@ -50,40 +50,40 @@
     @endphp
 
     <!-- ========================================== -->
-    <!-- HEADER / NAVBAR UTAMA (STICKY & PREMIUM) -->
+    <!-- HEADER / NAVBAR UTAMA (RESPONSIF IPAD & LAPTOP) -->
     <!-- ========================================== -->
     <header x-data="{ userDropdownOpen: false, mobileMenuOpen: false }" class="sticky top-0 bg-[#0a0a0a] border-b border-[#3A2E28] z-[100] shadow-2xl">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20 relative">
+        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 sm:h-20 relative">
                 
-                <!-- KIRI: Link Navigasi Desktop -->
-                <div class="hidden md:flex items-center space-x-6 lg:space-x-10 w-5/12 justify-start">
-                    <a href="{{ route('products.index') }}" class="whitespace-nowrap font-mono text-xs font-bold tracking-widest uppercase text-red-600 hover:text-red-500 transition-colors">
+                <!-- KIRI: Link Navigasi (Responsif iPad: text-[10px], Laptop: text-xs) -->
+                <div class="hidden md:flex items-center space-x-2 lg:space-x-10 w-[38%] lg:w-5/12 justify-start">
+                    <a href="{{ route('products.index') }}" class="whitespace-nowrap font-mono text-[10px] lg:text-xs font-bold tracking-widest uppercase text-red-600 hover:text-red-500 transition-colors">
                         Katalog Kopi
                     </a>
-                    <a href="{{ route('about.index') }}" class="whitespace-nowrap font-mono text-xs font-bold tracking-widest uppercase text-white hover:text-gray-300 transition-colors">
+                    <a href="{{ route('about.index') }}" class="whitespace-nowrap font-mono text-[10px] lg:text-xs font-bold tracking-widest uppercase text-white hover:text-gray-300 transition-colors">
                         Cerita Petani
                     </a>
                 </div>
 
                 <!-- TENGAH: Logo Melayang dengan Efek Cincin Merah -->
-                <div class="absolute left-1/2 transform -translate-x-1/2 top-2 sm:top-2.5 z-[110]">
-                    <a href="{{ route('home') }}" class="block rounded-full bg-[#120F0D] border-[3px] border-red-600 shadow-xl shadow-red-600/50 p-1 sm:p-1.5 hover:scale-105 transition-all duration-300">
-                        <img src="/images/waykopi_logo.png" alt="Way Kopi" class="h-12 w-12 sm:h-16 sm:w-16 object-contain rounded-full">
+                <div class="absolute left-1/2 transform -translate-x-1/2 top-1 sm:top-2.5 z-[110]">
+                    <a href="{{ route('home') }}" class="block rounded-full bg-[#120F0D] border-[2.5px] sm:border-[3px] border-red-600 shadow-xl shadow-red-600/50 p-1 sm:p-1.5 hover:scale-105 transition-all duration-300">
+                        <img src="/images/waykopi_logo.png" alt="Way Kopi" class="h-10 w-10 sm:h-16 sm:w-16 object-contain rounded-full">
                     </a>
                 </div>
 
-                <!-- KANAN: Link Navigasi & Ikon Desktop -->
-                <div class="hidden md:flex items-center space-x-6 lg:space-x-10 w-5/12 justify-end">
-                    <a href="{{ route('blog.index') }}" class="whitespace-nowrap font-mono text-xs font-bold tracking-widest uppercase text-white hover:text-gray-300 transition-colors">
+                <!-- KANAN: Link Navigasi & Ikon (Responsif iPad & Laptop) -->
+                <div class="hidden md:flex items-center space-x-2 lg:space-x-10 w-[38%] lg:w-5/12 justify-end">
+                    <a href="{{ route('blog.index') }}" class="whitespace-nowrap font-mono text-[10px] lg:text-xs font-bold tracking-widest uppercase text-white hover:text-gray-300 transition-colors">
                         Jurnal & Seduh
                     </a>
-                    <a href="{{ route('products.index') }}" class="whitespace-nowrap font-mono text-xs font-bold tracking-widest uppercase text-[var(--color-accent-gold)] hover:text-yellow-400 transition-colors">
+                    <a href="{{ route('products.index') }}" class="whitespace-nowrap font-mono text-[10px] lg:text-xs font-bold tracking-widest uppercase text-[var(--color-accent-gold)] hover:text-yellow-400 transition-colors">
                         Promo Launching
                     </a>
                     
                     <!-- Garis Pemisah Vertikal & Ikon -->
-                    <div class="flex items-center space-x-4 lg:space-x-5 border-l border-gray-700 pl-4 lg:pl-6 ml-2">
+                    <div class="flex items-center space-x-2 lg:space-x-5 border-l border-gray-700 pl-2 lg:pl-6 ml-1">
                         
                         <!-- Dropdown Akun User -->
                         <div class="relative flex items-center" @click.away="userDropdownOpen = false">

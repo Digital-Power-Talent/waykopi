@@ -1,17 +1,16 @@
 <x-layouts.storefront title="Way Kopi — Kopi Robusta Lampung Langsung dari Kebun Petani">
     
-    <!-- 1. HERO BANNER UTAMA -->
+    <!-- 1. HERO BANNER UTAMA (BISA DIGESER FULL DI HP & IPAD) -->
     <section class="relative w-full bg-surface border-b border-custom overflow-hidden group transition-colors duration-300">
-        <!-- PERBAIKAN: Menggunakan aspect-video untuk HP agar gambar tidak terpotong -->
-        <div class="relative w-full aspect-video sm:aspect-auto sm:h-[380px] overflow-hidden">
-            <!-- PERBAIKAN: Menggunakan object-left untuk HP agar teks Way Kopi di kiri tidak terpotong -->
-            <img src="/images/banner_waykopi.png" alt="Way Kopi Robusta Lampung" class="w-full h-full object-cover object-left sm:object-center transition-transform duration-1000 group-hover:scale-105">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+        <div class="w-full overflow-x-auto scrollbar-none">
+            <div class="relative min-w-[1000px] lg:min-w-full h-[260px] sm:h-[380px] overflow-hidden flex items-center justify-start">
+                <img src="/images/banner_waykopi.png" alt="Way Kopi Robusta Lampung" class="w-full h-full object-cover object-left sm:object-center transition-transform duration-1000 group-hover:scale-105 absolute inset-0">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            </div>
         </div>
         
         <!-- Floating Quick Action CTA -->
-        <div class="absolute bottom-4 right-4 sm:bottom-6 sm:right-8 z-20">
-            <!-- PERBAIKAN: Teks dipersingkat menjadi "Belanja Koleksi" agar lebih pas di layar HP -->
+        <div class="absolute bottom-4 right-4 sm:bottom-6 sm:right-8 z-20 pointer-events-auto">
             <a href="{{ route('products.index') }}" class="px-5 py-2.5 sm:px-6 sm:py-3 text-[10px] sm:text-xs font-bold font-mono bg-[var(--color-accent-gold)] text-black rounded-[var(--radius-sm)] hover:bg-[var(--color-accent-gold-bright)] transition-all shadow-xl uppercase tracking-widest flex items-center gap-2 border border-[var(--color-accent-gold)]">
                 <span>Belanja Koleksi</span>
                 <span>&rarr;</span>
@@ -21,9 +20,7 @@
 
     <!-- 2. TRUST BADGES BAR -->
     <section class="bg-surface border-b border-custom py-4 sm:py-3 px-4 sm:px-8 shadow-inner transition-colors duration-300">
-        <!-- PERBAIKAN: Menjadi grid-cols-1 di HP agar menumpuk rapi ke bawah -->
         <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-y-3 sm:gap-4 text-center font-mono text-[11px] sm:text-xs uppercase tracking-wider text-main">
-            <!-- PERBAIKAN: Border disesuaikan agar rapi di HP (border-b) dan kembali jadi (border-r) di laptop -->
             <div class="flex items-center justify-center space-x-2 pb-3 sm:pb-0 sm:py-1 border-b sm:border-b-0 sm:border-r border-custom">
                 <span class="text-[var(--color-accent-gold)] font-bold text-sm sm:text-base">✓</span>
                 <span>100% Fine Robusta Lampung</span>
